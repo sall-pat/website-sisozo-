@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saloni — Creative Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #050505;
+    --off-white: #f0ece4;
+    --warm-grey: #a09a90;
+    --accent: #c8a97e;
+    --accent-dim: rgba(200, 169, 126, 0.15);
+    --ai-color: #7eb8c8;
+    --3d-color: #c8a97e;
+    --fashion-color: #c87ea0;
+  }
+
+  html { scroll-behavior: auto; }
+
+  body {
+    background: var(--black);
+    color: var(--off-white);
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease, width 0.3s, height 0.3s, background 0.3s;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(200,169,126,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, width 0.3s, height 0.3s;
+  }
+
+  /* ── INTRO / ANIMATION SECTION ── */
+  #intro {
+    position: relative;
+    height: 300vh; /* scroll space for 29 frames */
+  }
+
+  #sticky-scene {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Subtle noise grain overlay */
+  #sticky-scene::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0.4;
+  }
+
+  #brain-canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+
+  /* WELCOME TEXT */
+  #welcome-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0;
+    text-align: center;
+    pointer-events: none;
+    z-index: 20;
+    white-space: nowrap;
+  }
+
+  #welcome-text span {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: clamp(1.4rem, 3.5vw, 3rem);
+    color: var(--off-white);
+    letter-spacing: 0.12em;
+    text-shadow: 0 0 60px rgba(200,169,126,0.4);
+  }
+
+  #welcome-text span.sub {
+    font-size: clamp(0.7rem, 1.5vw, 1.1rem);
+    letter-spacing: 0.4em;
+    font-style: normal;
+    font-family: 'Syncopate', sans-serif;
+    font-weight: 400;
+    color: var(--accent);
+    margin-top: 0.6em;
+    text-shadow: none;
+  }
+
+  /* AMBIENT GLOW BEHIND BRAIN */
+  .brain-glow {
+    position: absolute;
+    width: 55vw;
+    height: 55vw;
+    max-width: 700px;
+    max-height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,169,126,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* SCROLL HINT */
+  #scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    opacity: 1;
+    transition: opacity 0.5s;
+    z-index: 30;
+  }
+  #scroll-hint span {
+    font-family: 'Syncopate', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.5em;
+    color: var(--off-white);
+    text-transform: uppercase;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    animation: linePulse 1.4s ease-in-out infinite;
+  }
+  .scroll-arrow {
+    width: 10px;
+    height: 10px;
+    border-right: 1px solid var(--accent);
+    border-bottom: 1px solid var(--accent);
+    transform: rotate(45deg);
+    animation: arrowPulse 1.4s ease-in-out infinite;
+    margin-top: -0.8rem;
+  }
+  @keyframes linePulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+  @keyframes arrowPulse {
+    0%, 100% { opacity: 0.3; transform: translateY(-4px) rotate(45deg); }
+    50% { opacity: 1; transform: translateY(4px) rotate(45deg); }
+  }
+
+  /* ── PORTFOLIO SECTIONS ── */
+  #portfolio { position: relative; padding: 0; }
+
+  /* Category header */
+  .cat-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 7rem 6vw 1.5rem;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .cat-header.visible { opacity: 1; transform: translateY(0); }
+
+  .cat-label {
+    font-family: 'Syncopate', sans-serif;
+    font-size: clamp(0.55rem, 1vw, 0.8rem);
+    font-weight: 700;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .cat-line { flex: 1; height: 1px; background: currentColor; opacity: 0.15; }
+  .cat-num {
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.65rem;
+    opacity: 0.3;
+    letter-spacing: 0.1em;
+  }
+
+  /* Sub-category label */
+  .subcat-header {
+    padding: 2.5rem 6vw 1rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .subcat-header.visible { opacity: 1; transform: translateY(0); }
+  .subcat-label {
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    color: var(--warm-grey);
+    text-transform: uppercase;
+    border-left: 2px solid currentColor;
+    padding-left: 0.8rem;
+  }
+
+  /* Section colors */
+  .ai-section .cat-label  { color: var(--ai-color); }
+  .threed-section .cat-label { color: var(--3d-color); }
+  .design-section .cat-label { color: #a07ec8; }
+  .fashion-section .cat-label { color: var(--fashion-color); }
+
+  /* ── PROJECT GRID ── */
+  .project-grid {
+    display: grid;
+    padding: 0.5rem 6vw 2rem;
+    gap: 3px;
+  }
+
+  /* Grid layouts */
+  .grid-ai       { grid-template-columns: 1.8fr 1fr; }
+  .grid-3col     { grid-template-columns: repeat(3, 1fr); }
+  .grid-4col     { grid-template-columns: repeat(4, 1fr); }
+  .grid-2col     { grid-template-columns: repeat(2, 1fr); }
+  .grid-5col     { grid-template-columns: repeat(5, 1fr); }
+  .grid-mixed    { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* ── PROJECT CARD ── */
+  .project-card {
+    position: relative;
+    overflow: hidden;
+    background: #0a0a0a;
+    cursor: none;
+  }
+
+  /* Aspect ratios */
+  .ratio-vertical  { aspect-ratio: 9/16; max-height: 90vh; }
+  .ratio-horizontal{ aspect-ratio: 16/9; }
+  .ratio-square    { aspect-ratio: 1/1; }
+  .ratio-tall      { aspect-ratio: 3/4; }
+
+  /* Media inside card */
+  .card-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+  }
+  .project-card:hover .card-media { transform: scale(1.04); }
+
+  /* Placeholder (shown before media loads / no file yet) */
+  .card-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Overlay — always present, darkens on hover */
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(5,5,5,0.92) 0%,
+      rgba(5,5,5,0.3) 50%,
+      transparent 100%
+    );
+    opacity: 1;
+    transition: opacity 0.4s ease;
+    z-index: 2;
+  }
+  .project-card:hover .card-overlay {
+    background: linear-gradient(
+      to top,
+      rgba(5,5,5,0.7) 0%,
+      rgba(5,5,5,0.1) 60%,
+      transparent 100%
+    );
+  }
+
+  /* Project name — always visible at bottom, moves up and centers on hover */
+  .card-title-center {
+    position: absolute;
+    bottom: 1.2rem;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 3;
+    opacity: 1;
+    transition: all 0.4s ease;
+    width: 100%;
+    pointer-events: none;
+    padding: 0 1rem;
+  }
+  .project-card:hover .card-title-center {
+    bottom: 50%;
+    transform: translateY(50%);
+  }
+
+  .card-title-center .title-main {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(0.9rem, 1.8vw, 1.6rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--off-white);
+    line-height: 1.2;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+  }
+  .card-title-center .title-sub {
+    font-family: 'Syncopate', sans-serif;
+    font-size: clamp(0.4rem, 0.7vw, 0.6rem);
+    letter-spacing: 0.2em;
+    color: var(--off-white);
+    font-weight: 700;
+    margin-top: 0.4em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.4s ease 0.1s;
+    text-shadow: 0 1px 8px rgba(0,0,0,1);
+  }
+  .project-card:hover .card-title-center .title-sub { opacity: 1; }
+
+  /* Award badge on card */
+  .card-award {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 4;
+    background: rgba(126,184,200,0.12);
+    border: 1px solid rgba(126,184,200,0.4);
+    color: var(--ai-color);
+    font-family: 'Syncopate', sans-serif;
+    font-size: 0.42rem;
+    letter-spacing: 0.18em;
+    padding: 0.3rem 0.7rem;
+    text-transform: uppercase;
+  }
+  .card-award::before { content: '★  '; }
+
+  /* Span helpers */
+  .col-span-2 { grid-column: span 2; }
+  .row-span-2 { grid-row: span 2; }
+
+  /* ── ABOUT ── */
+  #about {
+    padding: 8rem 8vw;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .about-label {
+    font-family: 'Syncopate', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    color: var(--accent);
+    margin-bottom: 2rem;
+  }
+
+  .about-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--off-white);
+  }
+  .about-title em { font-style: italic; color: var(--accent); }
+
+  .about-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--warm-grey);
+    margin-top: 2rem;
+  }
+
+  .about-body strong { color: var(--off-white); font-weight: 400; }
+
+  .contact-line {
+    margin-top: 3rem;
+    font-family: 'Syncopate', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--warm-grey);
+  }
+  .contact-line a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(200,169,126,0.3);
+    padding-bottom: 1px;
+    transition: border-color 0.3s;
+  }
+  .contact-line a:hover { border-color: var(--accent); }
+
+  .disciplines {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .discipline-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .discipline-item.visible { opacity: 1; transform: translateX(0); }
+
+  .disc-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .disc-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 300;
+    color: var(--off-white);
+  }
+  .disc-detail {
+    margin-left: auto;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.58rem;
+    color: var(--warm-grey);
+    text-align: right;
+  }
+
+  footer {
+    padding: 2rem 8vw;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer span {
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.55rem;
+    color: rgba(160,154,144,0.4);
+    letter-spacing: 0.1em;
+  }
+
+  /* LOADING SCREEN */
+  #loader {
+    position: fixed;
+    inset: 0;
+    background: var(--black);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    transition: opacity 0.8s ease;
+  }
+  #loader.hidden { opacity: 0; pointer-events: none; }
+
+  .loader-name {
+    font-family: 'Syncopate', sans-serif;
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    letter-spacing: 0.4em;
+    color: var(--off-white);
+  }
+
+  .loader-bar-wrap {
+    width: 200px;
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .loader-bar {
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+  .loader-count {
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.6rem;
+    color: var(--warm-grey);
+    letter-spacing: 0.2em;
+  }
+
+  /* ── RESPONSIVE — MOBILE ── */
+  @media (max-width: 768px) {
+
+    /* Hide custom cursor on touch */
+    .cursor, .cursor-ring { display: none; }
+    body { cursor: auto; }
+    .project-card { cursor: pointer; }
+
+    /* Intro */
+    #intro { height: 250vh; }
+    #welcome-text span { font-size: clamp(1.1rem, 6vw, 1.8rem); white-space: normal; text-align: center; padding: 0 1.5rem; }
+    #welcome-text span.sub { font-size: clamp(0.6rem, 3vw, 0.9rem); }
+
+    /* About */
+    #about {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      padding: 5rem 6vw;
+    }
+    .about-title { font-size: clamp(2.2rem, 10vw, 3.5rem); }
+    .about-body { font-size: 1rem; margin-top: 1.2rem; }
+    .disciplines { margin-top: 2rem; gap: 1rem; }
+    .discipline-item { gap: 1rem; padding-bottom: 1rem; }
+    .disc-name { font-size: 1.1rem; }
+
+    /* Category headers */
+    .cat-header { padding: 4rem 5vw 1.2rem; gap: 1.2rem; }
+    .cat-label { font-size: clamp(0.5rem, 2.5vw, 0.7rem); }
+    .subcat-header { padding: 2rem 5vw 0.8rem; }
+
+    /* All grids → responsive 2-col or 1-col */
+    .project-grid {
+      padding: 0.4rem 5vw 1.5rem;
+      gap: 3px;
+    }
+    .grid-ai       { grid-template-columns: 1fr; }
+    .grid-3col     { grid-template-columns: repeat(2, 1fr); }
+    .grid-4col     { grid-template-columns: repeat(2, 1fr); }
+    .grid-2col     { grid-template-columns: repeat(2, 1fr); }
+    .grid-5col     { grid-template-columns: repeat(2, 1fr); }
+    .grid-mixed    { grid-template-columns: 1fr; }
+    .project-grid[style*="grid-template-columns: 1fr 1fr 1fr 1fr"] { grid-template-columns: repeat(2, 1fr) !important; }
+    .project-grid[style*="grid-template-columns: 2fr 1fr 1fr"]     { grid-template-columns: 1fr !important; }
+    .project-grid[style*="grid-template-columns: 1fr 1fr"]         { grid-template-columns: repeat(2, 1fr) !important; }
+    .project-grid[style*="grid-template-columns: 1fr 1fr 1fr"]     { grid-template-columns: repeat(2, 1fr) !important; }
+    .project-grid[style*="grid-template-columns: 1fr;"]            { grid-template-columns: 1fr !important; }
+
+    /* Reset col/row spans on mobile */
+    .col-span-2 { grid-column: span 1; }
+    .row-span-2 { grid-row: span 1; }
+
+    /* Card aspect ratios — shorten verticals on small screens */
+    .ratio-vertical   { aspect-ratio: 3/4; max-height: 70vw; }
+    .ratio-horizontal { aspect-ratio: 16/9; }
+    .ratio-square     { aspect-ratio: 1/1; }
+    .ratio-tall       { aspect-ratio: 3/4; }
+
+    /* Award badge */
+    .card-award { font-size: 0.38rem; padding: 0.25rem 0.5rem; }
+
+    /* On mobile: titles always visible (no hover state needed) */
+    .card-title-center {
+      bottom: 0.8rem;
+    }
+    .card-title-center .title-main { font-size: clamp(0.75rem, 3.5vw, 1.1rem); }
+    .card-title-center .title-sub  { font-size: clamp(0.38rem, 1.5vw, 0.55rem); opacity: 0.8; }
+
+    /* Mobile: subtitle always visible, no tap needed */
+    .card-title-center .title-sub { opacity: 0.85; }
+
+    /* Footer */
+    footer {
+      padding: 1.5rem 6vw;
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+    }
+
+    /* Loader */
+    .loader-name { font-size: clamp(1rem, 6vw, 1.5rem); }
+  }
+
+  /* Tiny screens */
+  @media (max-width: 400px) {
+    .grid-3col, .grid-4col { grid-template-columns: 1fr; }
+    .grid-2col { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- CUSTOM CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- LOADING SCREEN -->
+<div id="loader">
+  <div class="loader-name">SALONI</div>
+  <div class="loader-bar-wrap"><div class="loader-bar" id="loaderBar"></div></div>
+  <div class="loader-count" id="loaderCount">0 / 29</div>
+</div>
+
+<!-- ── INTRO ANIMATION ── -->
+<section id="intro">
+  <div id="sticky-scene">
+    <div class="brain-glow"></div>
+
+    <!-- The brain frames render here — animation is fully baked into the PNG sequence -->
+    <canvas id="brain-canvas"></canvas>
+
+    <!-- Welcome text emerges at frame 22 -->
+    <div id="welcome-text">
+      <span>Welcome to Saloni's Brainchild</span>
+      <span class="sub">Conceptual 3D & AI Artist</span>
+      <span class="sub" style="font-size: clamp(0.55rem, 1.1vw, 0.85rem); opacity: 0.6; margin-top: 0.3em;">[and more in the digital design space]</span>
+    </div>
+
+    <!-- Scroll hint -->
+    <div id="scroll-hint">
+      <span>scroll</span>
+      <div class="scroll-line"></div>
+      <div class="scroll-arrow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+  <div>
+    <div class="about-label">About</div>
+    <h2 class="about-title">Saloni<br><em>Creates</em><br>Worlds.</h2>
+    <p class="about-body">
+      Creative direction is the thread that runs through everything I make.
+      I concept, direct, and execute. Across mediums, across industries, across dimensions. What started in fashion school as an obsession with concept-building evolved into 3D worlds, AR experiences, NFT collections, AI-generated film, and marketing assets that actually stop people mid-scroll.
+      Having worked across fashion, entertainment, Web3, and brand marketing, I've learned to adapt fast to new tools, new industries, new briefs. When AI entered the creative space, I didn't wait to be taught. I picked it up, entered competitions, and got nominated.
+      The work here isn't categorised by skill. It's organised by evolution, from where my thinking was born, to where it's going next.<br><br>
+      Nominated for <strong>Top 5 Best Film at Soulscape 2026</strong> and awarded <strong>Most WTF Trailer at Machine Cinema × Freepik</strong>, she is one of the rare creatives who can concept, direct, and execute end-to-end.
+    </p>
+    <p class="contact-line">Available for collaboration — <a href="mailto:salonipatel202@gmail.com">salonipatel202@gmail.com</a></p>
+  </div>
+  <div>
+    <div class="about-label">Disciplines</div>
+    <div class="disciplines">
+      <div class="discipline-item" style="transition-delay: 0s">
+        <div class="disc-dot" style="background: var(--ai-color)"></div>
+        <span class="disc-name">AI Film</span>
+        <span class="disc-detail">Soulscape 2026<br>Machine Cinema</span>
+      </div>
+      <div class="discipline-item" style="transition-delay: 0.1s">
+        <div class="disc-dot" style="background: var(--3d-color)"></div>
+        <span class="disc-name">3D & Animation</span>
+        <span class="disc-detail">NFT · AR · Print<br>Geometry Nodes</span>
+      </div>
+      <div class="discipline-item" style="transition-delay: 0.15s">
+        <div class="disc-dot" style="background: #a07ec8"></div>
+        <span class="disc-name">Graphic Design</span>
+        <span class="disc-detail">Brand · Print<br>Marketing</span>
+      </div>
+      <div class="discipline-item" style="transition-delay: 0.2s">
+        <div class="disc-dot" style="background: var(--fashion-color)"></div>
+        <span class="disc-name">Fashion</span>
+        <span class="disc-detail">Concept · Direction<br>Thesis Collection</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PORTFOLIO ── -->
+<section id="portfolio">
+
+  <!-- 01 AI FILM -->
+  <div class="cat-header ai-section" data-reveal>
+    <span class="cat-label">AI Film</span>
+    <div class="cat-line"></div>
+    <span class="cat-num">01</span>
+  </div>
+  <div class="project-grid grid-ai">
+    <div class="project-card ratio-horizontal row-span-2" data-project="unwritten">
+      <div class="card-placeholder" style="background: linear-gradient(135deg, #060e16 0%, #0d1f2d 100%);"></div>
+      <img class="card-media" src="projects/unwritten.jpg" alt="unwritten" loading="lazy">
+      <div class="card-award">Top 5 Best Film · Soulscape 2026</div>
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">Unwritten</div><div class="title-sub">Short Film · AI</div></div>
+    </div>
+    <div class="project-card ratio-horizontal" data-project="honeypocalypse">
+      <div class="card-placeholder" style="background: linear-gradient(135deg, #0a1200 0%, #1a2200 100%);"></div>
+      <img class="card-media" src="projects/honeypocalypse.jpg" alt="honeypocalypse" loading="lazy">
+      <div class="card-award">Most WTF Trailer · Machine Cinema × Freepik</div>
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">Honeypocalypse</div><div class="title-sub">Trailer · AI</div></div>
+    </div>
+    <div class="project-card ratio-vertical" data-project="unwritten">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #060d15 0%, #0a1825 100%);"></div>
+      <img class="card-media" src="projects/unwritten.jpg" alt="unwritten" loading="lazy">
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">Unwritten</div><div class="title-sub">Trailer · AI</div></div>
+    </div>
+  </div>
+
+  <!-- 02 3D & ANIMATION -->
+  <div class="cat-header threed-section" data-reveal>
+    <span class="cat-label">3D & Animation</span>
+    <div class="cat-line"></div>
+    <span class="cat-num">02</span>
+  </div>
+
+  <div class="subcat-header" data-reveal>
+    <span class="subcat-label" style="color: var(--3d-color);">Conceptual 3D Art</span>
+  </div>
+  <div class="project-grid grid-3col">
+    <div class="project-card ratio-vertical" data-project="digital-gift">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #0d0800 0%, #1a1000 100%);"></div>
+      <img class="card-media" src="projects/digital-gift.jpg" alt="digital-gift" loading="lazy">
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">Digital Gift</div><div class="title-sub">3D Scanning · Animation · Lookdev</div></div>
+    </div>
+    <div class="project-card ratio-vertical" data-project="again-again-again">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #080010 0%, #130020 100%);"></div>
+      <img class="card-media" src="projects/again-again-again.jpg" alt="again-again-again" loading="lazy">
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">Again Again Again</div><div class="title-sub">DJ Set Visualizer · Geometry Nodes</div></div>
+    </div>
+    <div class="project-card ratio-vertical" data-project="skc-visualiser">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #000a10 0%, #001520 100%);"></div>
+      <img class="card-media" src="projects/skc-visualiser.jpg" alt="skc-visualiser" loading="lazy">
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">SKC Visualiser</div><div class="title-sub">Geometry Nodes · Lookdev · Lighting</div></div>
+    </div>
+  </div>
+  <div class="project-grid" style="grid-template-columns: 2fr 1fr 1fr;">
+    <div class="project-card ratio-horizontal" data-project="generate">
+      <div class="card-placeholder" style="background: linear-gradient(135deg, #050010 0%, #0d0025 100%);"></div>
+      <img class="card-media" src="projects/generate.jpg" alt="generate" loading="lazy">
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">Generate</div><div class="title-sub">Particle System · Lookdev · Lighting</div></div>
+    </div>
+    <div class="project-card ratio-square" data-image="projects/her.jpg" data-project="her">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #100005 0%, #200010 100%);"></div>
+      <img class="card-media" src="projects/her.jpg" alt="Her">
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">Her</div><div class="title-sub">Music Album Art · Lookdev</div></div>
+    </div>
+    <div class="project-card ratio-vertical" data-project="zablien">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #000a05 0%, #001510 100%);"></div>
+      <img class="card-media" src="projects/zablien.jpg" alt="zablien" loading="lazy">
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">Zablien</div><div class="title-sub">3D Modelling</div></div>
+    </div>
+  </div>
+
+  <div class="subcat-header" data-reveal>
+    <span class="subcat-label" style="color: var(--3d-color);">Augmented Reality</span>
+  </div>
+  <div class="project-grid grid-2col">
+    <div class="project-card ratio-vertical" data-video="projects/cube-ar.mp4" data-project="cube-ar">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #050a10 0%, #0a1525 100%);"></div>
+      <video class="card-media" src="projects/cube-ar.mov" muted loop playsinline preload="metadata"></video>
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">Cube</div><div class="title-sub">Print + AR Experience</div></div>
+    </div>
+    <div class="project-card ratio-vertical" data-video="projects/frontiminati.mp4" data-project="frontiminati">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #0a0500 0%, #150a00 100%);"></div>
+      <video class="card-media" src="projects/frontiminati.mov" muted loop playsinline preload="metadata"></video>
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">Frontiminati</div><div class="title-sub">Painting + AR Experience</div></div>
+    </div>
+  </div>
+
+  <div class="subcat-header" data-reveal>
+    <span class="subcat-label" style="color: var(--3d-color);">NFTs</span>
+  </div>
+  <div class="project-grid grid-mixed">
+    <div class="project-card ratio-horizontal col-span-2" data-video="projects/cryptominati.mp4" data-project="cryptominati">
+      <div class="card-placeholder" style="background: linear-gradient(135deg, #0a0800 0%, #151200 100%);"></div>
+      <video class="card-media" src="projects/cryptominati.mp4" muted loop playsinline preload="metadata"></video>
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">Cryptominati</div><div class="title-sub">NFT Sold</div></div>
+    </div>
+    <div class="project-card ratio-square" data-video="projects/no-nazar.mp4" data-project="no-nazar">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #080010 0%, #100020 100%);"></div>
+      <video class="card-media" src="projects/no-nazar.mp4" muted loop playsinline preload="metadata"></video>
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">No Nazar</div><div class="title-sub">NFT Sold</div></div>
+    </div>
+  </div>
+  <div class="project-grid grid-3col">
+    <div class="project-card ratio-square" data-video="projects/iamaisha.mp4" data-project="iamaisha">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #0a0005 0%, #150010 100%);"></div>
+      <video class="card-media" src="projects/iamaisha.mp4" muted loop playsinline preload="metadata"></video>
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">IAMAISHA</div><div class="title-sub">Concept · 3D Modelling</div></div>
+    </div>
+    <div class="project-card ratio-square" data-video="projects/pedro-amos.mp4" data-project="pedro-amos">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #000a08 0%, #001510 100%);"></div>
+      <video class="card-media" src="projects/pedro-amos.mp4" muted loop playsinline preload="metadata"></video>
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">Pedro Amos</div><div class="title-sub">Concept · 3D Modelling</div></div>
+    </div>
+    <div class="project-card ratio-square" data-video="projects/larva-lads.mp4" data-project="larva-lads">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #080a00 0%, #121500 100%);"></div>
+      <video class="card-media" src="projects/larva-lads.mp4" muted loop playsinline preload="metadata"></video>
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">Larva Lads</div><div class="title-sub">Concept · 3D Modelling</div></div>
+    </div>
+  </div>
+
+  <div class="subcat-header" data-reveal>
+    <span class="subcat-label" style="color: var(--3d-color);">3D Printing</span>
+  </div>
+  <div class="project-grid grid-2col">
+    <div class="project-card ratio-vertical" data-video="projects/fleurz.mp4" data-project="fleurz">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #0a0000 0%, #180500 100%);"></div>
+      <video class="card-media" src="projects/fleurz.MOV" muted loop playsinline preload="metadata"></video>
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">Fleurz</div><div class="title-sub">RTFKT Creator Challenge</div></div>
+    </div>
+    <div class="project-card ratio-square" data-image="projects/mixt.jpg" data-project="mixt">
+      <div class="card-placeholder" style="background: linear-gradient(160deg, #050a05 0%, #0a1500 100%);"></div>
+      <img class="card-media" src="projects/mixt.png" alt="MIXT Salad Bowl">
+      <div class="card-overlay"></div>
+      <div class="card-title-center"><div class="title-main">MIXT Salad Bowl</div><div class="title-sub">3D Print</div></div>
+    </div>
+  </div>
+
+  <div class="subcat-header" data-reveal>
+    <span class="subcat-label" style="color: var(--3d-color);">Academic Work</span>
+  </div>
+  <div class="project-grid grid-4col">
+    <div class="project-card ratio-horizontal" data-video="projects/mosquitrone.mp4" data-project="mosquitrone"><div class="card-placeholder" style="background:#050810;"></div><video class="card-media" src="projects/mosquitrone.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Mosquitrone</div><div class="title-sub">3D Modelling</div></div></div>
+    <div class="project-card ratio-horizontal" data-video="projects/the-escape.mp4" data-project="the-escape"><div class="card-placeholder" style="background:#080a05;"></div><video class="card-media" src="projects/the-escape.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">The Escape</div><div class="title-sub">Look Dev · Lighting</div></div></div>
+    <div class="project-card ratio-horizontal" data-video="projects/boot.mp4" data-project="boot"><div class="card-placeholder" style="background:#0a0500;"></div><video class="card-media" src="projects/boot.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Boot</div><div class="title-sub">Texturing</div></div></div>
+    <div class="project-card ratio-horizontal" data-video="projects/robot.mp4" data-project="robot"><div class="card-placeholder" style="background:#080808;"></div><video class="card-media" src="projects/robot.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Robot</div><div class="title-sub">3D Modelling</div></div></div>
+    <div class="project-card ratio-horizontal" data-video="projects/the-beetle.mp4" data-project="the-beetle"><div class="card-placeholder" style="background:#050a05;"></div><video class="card-media" src="projects/the-beetle.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">The Beetle</div><div class="title-sub">Texturing</div></div></div>
+    <div class="project-card ratio-horizontal" data-video="projects/camper.mp4" data-project="camper"><div class="card-placeholder" style="background:#0a0800;"></div><video class="card-media" src="projects/camper.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Camper</div><div class="title-sub">Texturing</div></div></div>
+    <div class="project-card ratio-horizontal" data-video="projects/mouth.mp4" data-project="mouth"><div class="card-placeholder" style="background:#0a0005;"></div><video class="card-media" src="projects/mouth.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Mouth</div><div class="title-sub">Texturing</div></div></div>
+    <div class="project-card ratio-horizontal" data-video="projects/minecart.mp4" data-project="minecart"><div class="card-placeholder" style="background:#050a0a;"></div><video class="card-media" src="projects/minecart.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Minecart</div><div class="title-sub">3D Modelling</div></div></div>
+  </div>
+
+  <!-- 03 GRAPHIC DESIGN & MARKETING -->
+  <div class="cat-header design-section" data-reveal>
+    <span class="cat-label">Graphic Design & Marketing</span>
+    <div class="cat-line"></div>
+    <span class="cat-num">03</span>
+  </div>
+  <div class="project-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+    <div class="project-card ratio-square" data-image="projects/mueshi-logo.jpg" data-project="mueshi-logo"><div class="card-placeholder" style="background:#080508;"></div><img class="card-media" src="projects/mueshi-logo.jpg" alt="Mueshi Logo"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Mueshi</div><div class="title-sub">Logo Design</div></div></div>
+    <div class="project-card ratio-square" data-image="projects/twitch-book.jpg" data-project="twitch-book"><div class="card-placeholder" style="background:#050810;"></div><img class="card-media" src="projects/twitch-book.jpg" alt="Twitch Book"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Twitch Book</div><div class="title-sub">Print Media</div></div></div>
+    <div class="project-card ratio-vertical" data-image="projects/prince-hyundai.jpg" data-project="prince-hyundai"><div class="card-placeholder" style="background:#030508;"></div><img class="card-media" src="projects/prince-hyundai.jpg" alt="Prince Hyundai"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Prince Hyundai</div><div class="title-sub">Print Pamphlets</div></div></div>
+    <div class="project-card ratio-square" data-image="projects/uxmagic.jpg" data-project="uxmagic"><div class="card-placeholder" style="background:#000a08;"></div><img class="card-media" src="projects/uxmagic.jpg" alt="UXMagic"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">UXMagic.ai</div><div class="title-sub">Growth & Marketing</div></div></div>
+  </div>
+  <div class="project-grid grid-3col">
+    <div class="project-card ratio-vertical" data-video="projects/tsdc.mp4" data-project="tsdc"><div class="card-placeholder" style="background:#080010;"></div><video class="card-media" src="projects/tsdc.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">TSDC</div><div class="title-sub">Instagram Animation · Figma</div></div></div>
+    <div class="project-card ratio-vertical" data-video="projects/skc-marketing.mp4" data-project="skc-visualiser"><div class="card-placeholder" style="background:#000a10;"></div><video class="card-media" src="projects/skc-marketing.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">SKC Visualiser</div><div class="title-sub">Creative Direction</div></div></div>
+    <div class="project-card ratio-vertical" data-project="unwritten"><div class="card-placeholder" style="background:#060d15;"></div><img class="card-media" src="projects/unwritten.jpg" alt="unwritten" loading="lazy"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Unwritten</div><div class="title-sub">Trailer · Marketing</div></div></div>
+  </div>
+
+  <!-- 04 FASHION -->
+  <div class="cat-header fashion-section" data-reveal>
+    <span class="cat-label">Fashion</span>
+    <div class="cat-line"></div>
+    <span class="cat-num">04</span>
+  </div>
+  <div class="project-grid grid-3col">
+    <div class="project-card ratio-vertical col-span-2" data-image="projects/twitch-fashion.jpg" data-project="twitch-fashion"><div class="card-placeholder" style="background:#100005;"></div><img class="card-media" src="projects/twitch-fashion.jpg" alt="Twitch"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Twitch</div><div class="title-sub">Thesis Collection</div></div></div>
+    <div class="project-card ratio-vertical" data-image="projects/sisozo.jpg" data-project="sisozo"><div class="card-placeholder" style="background:#100800;"></div><img class="card-media" src="projects/sisozo.jpg" alt="Sisozo"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Sisozo</div><div class="title-sub">Concept · Branding</div></div></div>
+  </div>
+  <div class="project-grid grid-3col">
+    <div class="project-card ratio-vertical" data-image="projects/chaos.jpg" data-project="chaos"><div class="card-placeholder" style="background:#0a0800;"></div><img class="card-media" src="projects/chaos.jpg" alt="Chaos"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Chaos</div><div class="title-sub">Concept · Future Building</div></div></div>
+    <div class="project-card ratio-vertical" data-image="projects/drama.jpg" data-project="drama"><div class="card-placeholder" style="background:#0a0005;"></div><img class="card-media" src="projects/drama.jpg" alt="Drama"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Drama</div><div class="title-sub">Concept · Creative Direction</div></div></div>
+    <div class="project-card ratio-vertical" data-image="projects/layering.jpg" data-project="layering"><div class="card-placeholder" style="background:#050a08;"></div><img class="card-media" src="projects/layering.jpg" alt="Layering"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Layering</div><div class="title-sub">Draping</div></div></div>
+  </div>
+  <div class="project-grid" style="grid-template-columns: 1fr;">
+    <div class="project-card ratio-horizontal" data-image="projects/clumsy.jpg" data-project="clumsy"><div class="card-placeholder" style="background:#080508;"></div><img class="card-media" src="projects/clumsy.jpg" alt="Clumsy"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Clumsy</div><div class="title-sub">Discovery Through Form</div></div></div>
+  </div>
+
+</section>
+  <span>© 2026 Saloni</span>
+  <span>Built for creative work</span>
+</footer>
+
+<script>
+// ────────────────────────────────────────────────
+// CONFIGURATION
+// Files named: 0001.png, 0002.png ... 0057.png
+// Place all PNGs inside a folder called "frames" next to index.html
+// ────────────────────────────────────────────────
+const FRAME_COUNT = 29;
+const TEXT_FRAME = 22;   // 0-indexed = frame 23 (text emerges here)
+const TEXT_FADE_END = 26; // text fully faded by this frame
+
+const frameUrl = i => `frames/${String(i).padStart(4,'0')}.png`;
+
+const frames = new Array(FRAME_COUNT).fill(null);
+let loadedCount = 0;
+let allLoaded = false;
+
+const canvas = document.getElementById('brain-canvas');
+const ctx = canvas.getContext('2d');
+const welcomeText = document.getElementById('welcome-text');
+const scrollHint = document.getElementById('scroll-hint');
+const loader = document.getElementById('loader');
+const loaderBar = document.getElementById('loaderBar');
+const loaderCount = document.getElementById('loaderCount');
+
+// ── Preload all frames ──
+function preloadFrames() {
+  for (let i = 1; i <= FRAME_COUNT; i++) {
+    const img = new Image();
+    img.src = frameUrl(i);
+    img.onload = () => {
+      frames[i - 1] = img;
+      loadedCount++;
+      const pct = Math.round((loadedCount / FRAME_COUNT) * 100);
+      loaderBar.style.width = pct + '%';
+      loaderCount.textContent = `${loadedCount} / ${FRAME_COUNT}`;
+
+      if (loadedCount === FRAME_COUNT) {
+        allLoaded = true;
+        // Size canvas to first frame's natural dimensions
+        const ref = frames[0];
+        canvas.width = ref.naturalWidth;
+        canvas.height = ref.naturalHeight;
+        drawFrame(0);
+        setTimeout(() => {
+          loader.classList.add('hidden');
+          loader.addEventListener('transitionend', () => loader.remove(), { once: true });
+        }, 400);
+      }
+    };
+    img.onerror = () => {
+      loadedCount++;
+      loaderBar.style.width = Math.round((loadedCount / FRAME_COUNT) * 100) + '%';
+      loaderCount.textContent = `${loadedCount} / ${FRAME_COUNT}`;
+      if (loadedCount === FRAME_COUNT) { allLoaded = true; loader.classList.add('hidden'); }
+    };
+  }
+}
+
+function drawFrame(index) {
+  const img = frames[Math.min(index, FRAME_COUNT - 1)];
+  if (!img) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0);
+}
+
+// ── Scroll driver ──
+function onScroll() {
+  if (!allLoaded) return;
+
+  const intro = document.getElementById('intro');
+  const scrollTop = window.scrollY;
+  const scrollHeight = intro.scrollHeight - window.innerHeight;
+  const progress = Math.min(Math.max(scrollTop / scrollHeight, 0), 1);
+
+  const rawFrame = progress * (FRAME_COUNT - 1);
+  const frameIndex = Math.floor(rawFrame);
+  const frameFrac = rawFrame - frameIndex;
+
+  // Hide scroll hint after first scroll
+  scrollHint.style.opacity = scrollTop > 20 ? '0' : '1';
+
+  // Draw current frame
+  drawFrame(frameIndex);
+
+  // ── Welcome text logic ──
+  // Before frame 47: hidden
+  if (frameIndex < TEXT_FRAME) {
+    welcomeText.style.opacity = '0';
+    welcomeText.style.transform = 'translate(-50%, -50%) scale(0.3)';
+
+  // At frame 47: scale in
+  } else if (frameIndex === TEXT_FRAME) {
+    const t = frameFrac;
+    welcomeText.style.opacity = t.toFixed(3);
+    welcomeText.style.transform = `translate(-50%, -50%) scale(${(0.3 + t * 0.7).toFixed(3)})`;
+
+  // Frames 47–52: fully visible
+  } else if (frameIndex < TEXT_FADE_END) {
+    welcomeText.style.opacity = '1';
+    welcomeText.style.transform = 'translate(-50%, -50%) scale(1)';
+
+  // Frames 52+: fade out as brain exits screen
+  } else {
+    const fadeProgress = (frameIndex - TEXT_FADE_END + frameFrac) / (FRAME_COUNT - TEXT_FADE_END);
+    const opacity = Math.max(0, 1 - fadeProgress * 2);
+    welcomeText.style.opacity = opacity.toFixed(3);
+    welcomeText.style.transform = 'translate(-50%, -50%) scale(1)';
+  }
+}
+
+window.addEventListener('scroll', onScroll, { passive: true });
+
+// ── Scroll reveal for section headers + subheaders ──
+const revealEls = document.querySelectorAll('[data-reveal], .subcat-header');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.2 });
+revealEls.forEach(el => observer.observe(el));
+
+// Discipline items
+const discItems = document.querySelectorAll('.discipline-item');
+const discObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.2 });
+discItems.forEach(el => discObserver.observe(el));
+
+// ── Detect touch device ──
+const isTouchDevice = () => window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+// ── Video playback (for any remaining video cards) ──
+document.querySelectorAll('.project-card').forEach(card => {
+  const video = card.querySelector('video');
+  if (!video) return;
+  video.load();
+  if (!isTouchDevice()) {
+    card.addEventListener('mouseenter', () => {
+      video.muted = false; video.volume = 0.8;
+      video.play().catch(() => { video.muted = true; video.play().catch(() => {}); });
+    });
+    card.addEventListener('mouseleave', () => {
+      video.muted = true; video.pause(); video.currentTime = 0;
+    });
+  } else {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { video.muted = true; video.play().catch(() => {}); }
+        else { video.pause(); video.currentTime = 0; }
+      });
+    }, { threshold: 0.4 });
+    obs.observe(card);
+  }
+});
+
+// ── Custom cursor ──
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+});
+
+// Hide cursor elements on touch devices
+if (isTouchDevice()) {
+  cursor.style.display = 'none';
+  ring.style.display = 'none';
+}
+
+function animateCursor() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+document.querySelectorAll('.project-card').forEach(card => {
+  card.addEventListener('mouseenter', () => {
+    cursor.style.width = '12px';
+    cursor.style.height = '12px';
+    ring.style.width = '60px';
+    ring.style.height = '60px';
+  });
+  card.addEventListener('mouseleave', () => {
+    cursor.style.width = '8px';
+    cursor.style.height = '8px';
+    ring.style.width = '36px';
+    ring.style.height = '36px';
+  });
+});
+
+// ── Project card click → project page ──
+// Both desktop and mobile: single tap/click navigates directly
+document.querySelectorAll('.project-card[data-project]').forEach(card => {
+  card.addEventListener('click', () => {
+    const pid = card.dataset.project;
+    const section = card.closest('section, div[id]')?.id || '';
+    window.location.href = `project.html?p=${pid}&from=${section}`;
+  });
+});
+
+// ── Start loading ──
+preloadFrames();
+</script>
+</body>
+</html>
