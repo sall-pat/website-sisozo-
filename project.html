@@ -14,11 +14,7 @@
     --off-white: #f0ece4;
     --warm-grey: #a09a90;
     --accent: #c8a97e;
-    --ai-color: #7eb8c8;
-    --3d-color: #c8a97e;
-    --design-color: #a07ec8;
-    --fashion-color: #c87ea0;
-    --tint: #c8a97e; /* overridden per category by JS */
+    --tint: #c8a97e;
   }
 
   html { scroll-behavior: smooth; }
@@ -30,567 +26,417 @@
     overflow-x: hidden;
     cursor: none;
     opacity: 0;
-    transition: opacity 0.6s ease;
+    transition: opacity 0.7s ease;
+    min-height: 100vh;
   }
   body.visible { opacity: 1; }
 
   /* ── CURSOR ── */
   .cursor {
-    position: fixed;
-    width: 8px; height: 8px;
-    background: var(--tint);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
+    position: fixed; width: 8px; height: 8px;
+    background: var(--tint); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
     transform: translate(-50%, -50%);
     transition: width 0.3s, height 0.3s;
   }
   .cursor-ring {
-    position: fixed;
-    width: 36px; height: 36px;
-    border: 1px solid rgba(200,169,126,0.4);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9998;
+    position: fixed; width: 36px; height: 36px;
+    border: 1px solid rgba(200,169,126,0.4); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
     transform: translate(-50%, -50%);
     transition: width 0.3s, height 0.3s;
   }
 
-  /* ── CATEGORY TINT OVERLAY ── */
+  /* ── TINT OVERLAY ── */
   .tint-overlay {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.03;
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0; opacity: 0.04;
   }
+
+  /* ── GLITCH EXIT ── */
+  #glitch-overlay { position: fixed; inset: 0; z-index: 9990; pointer-events: none; opacity: 0; background: var(--black); }
+  #glitch-canvas  { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 9991; pointer-events: none; opacity: 0; }
 
   /* ── EXIT BUTTON ── */
   #exit-btn {
-    position: fixed;
-    top: 2rem;
-    right: 2.5rem;
-    z-index: 1000;
-    font-family: 'Syncopate', sans-serif;
-    font-size: 0.65rem;
-    letter-spacing: 0.4em;
-    color: var(--warm-grey);
-    cursor: none;
-    -webkit-tap-highlight-color: transparent;
-    transition: color 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
+    position: fixed; top: 2rem; left: 2.5rem; z-index: 1000;
+    font-family: 'Syncopate', sans-serif; font-size: 0.6rem;
+    letter-spacing: 0.4em; color: var(--warm-grey);
+    cursor: none; -webkit-tap-highlight-color: transparent;
+    transition: color 0.3s;
+    display: flex; align-items: center; gap: 0.7rem;
   }
   #exit-btn:hover { color: var(--off-white); }
   #exit-btn::before {
-    content: '';
-    display: block;
-    width: 20px;
-    height: 1px;
-    background: currentColor;
-    transition: width 0.3s;
+    content: ''; display: block; width: 20px; height: 1px;
+    background: currentColor; transition: width 0.3s;
   }
   #exit-btn:hover::before { width: 40px; }
 
-  /* ── GLITCH OVERLAY (for exit animation) ── */
-  #glitch-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9990;
-    pointer-events: none;
-    opacity: 0;
-    background: var(--black);
-  }
-  #glitch-canvas {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 9991;
-    pointer-events: none;
-    opacity: 0;
-  }
-
-  /* ── HERO ── */
-  #hero {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    align-items: flex-end;
-    overflow: hidden;
-  }
-
-  #hero-media {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.6;
-  }
-
-  .hero-gradient {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to top,
-      rgba(5,5,5,1) 0%,
-      rgba(5,5,5,0.5) 40%,
-      transparent 100%
-    );
-  }
-
-  .hero-content {
-    position: relative;
-    z-index: 2;
-    padding: 4rem 6vw;
-    width: 100%;
-  }
-
-  .hero-category {
-    font-family: 'Syncopate', sans-serif;
-    font-size: 0.55rem;
-    letter-spacing: 0.45em;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
-  }
-  body.visible .hero-category { opacity: 1; transform: translateY(0); }
-
-  .hero-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(3rem, 8vw, 7rem);
-    font-weight: 300;
-    font-style: italic;
-    line-height: 1;
-    color: var(--off-white);
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s;
-  }
-  body.visible .hero-title { opacity: 1; transform: translateY(0); }
-
-  .hero-meta {
-    display: flex;
-    gap: 3rem;
-    margin-top: 1.5rem;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s;
-  }
-  body.visible .hero-meta { opacity: 1; transform: translateY(0); }
-
-  .hero-meta-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-  }
-  .meta-label {
-    font-family: 'Syncopate', sans-serif;
-    font-size: 0.45rem;
-    letter-spacing: 0.35em;
-    color: var(--warm-grey);
-    text-transform: uppercase;
-  }
-  .meta-value {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1rem;
-    font-weight: 300;
-    color: var(--off-white);
-  }
-
-  /* ── CONTENT ── */
-  .content-wrap {
+  /* ── MAIN LAYOUT ── */
+  .page-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
     position: relative;
     z-index: 1;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 6rem 6vw;
   }
+
+  /* ── LEFT PANEL ── */
+  .left-panel {
+    padding: 7rem 4vw 6rem 6vw;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255,255,255,0.05);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .left-panel::-webkit-scrollbar { display: none; }
+
+  /* Project number / category */
+  .proj-meta-top {
+    display: flex; align-items: center; gap: 1.5rem;
+    margin-bottom: 3rem;
+    opacity: 0; transform: translateY(12px);
+    transition: opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s;
+  }
+  body.visible .proj-meta-top { opacity: 1; transform: translateY(0); }
+
+  .proj-category {
+    font-family: 'Syncopate', sans-serif; font-size: 0.5rem;
+    letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--tint);
+  }
+  .proj-category-line { flex: 1; height: 1px; background: var(--tint); opacity: 0.2; }
+
+  /* Title */
+  .proj-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 5vw, 5.5rem);
+    font-weight: 300; font-style: italic;
+    line-height: 1; color: var(--off-white);
+    margin-bottom: 1.5rem;
+    opacity: 0; transform: translateY(16px);
+    transition: opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s;
+  }
+  body.visible .proj-title { opacity: 1; transform: translateY(0); }
+
+  /* Meta row */
+  .proj-meta-row {
+    display: flex; gap: 2.5rem; margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    opacity: 0; transform: translateY(10px);
+    transition: opacity 0.6s ease 0.35s, transform 0.6s ease 0.35s;
+    flex-wrap: wrap;
+  }
+  body.visible .proj-meta-row { opacity: 1; transform: translateY(0); }
+
+  .meta-item { display: flex; flex-direction: column; gap: 0.3rem; }
+  .meta-label {
+    font-family: 'Syncopate', sans-serif; font-size: 0.42rem;
+    letter-spacing: 0.3em; color: var(--warm-grey); text-transform: uppercase;
+  }
+  .meta-value {
+    font-family: 'Cormorant Garamond', serif; font-size: 0.95rem;
+    font-weight: 300; color: var(--off-white);
+  }
+
+  /* Award badge */
+  .award-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: 'Syncopate', sans-serif; font-size: 0.42rem;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--tint);
+    border: 1px solid rgba(200,169,126,0.3);
+    padding: 0.4rem 0.8rem;
+    margin-bottom: 2rem;
+    opacity: 0;
+    transition: opacity 0.6s ease 0.4s;
+  }
+  body.visible .award-badge { opacity: 1; }
+  .award-badge::before { content: '★'; }
+
+  /* Description */
+  .proj-description {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    font-weight: 300; line-height: 1.8;
+    color: var(--warm-grey); margin-bottom: 2.5rem;
+    opacity: 0; transform: translateY(10px);
+    transition: opacity 0.7s ease 0.45s, transform 0.7s ease 0.45s;
+  }
+  body.visible .proj-description { opacity: 1; transform: translateY(0); }
+
+  /* Tools */
+  .tools-label {
+    font-family: 'Syncopate', sans-serif; font-size: 0.46rem;
+    letter-spacing: 0.35em; color: var(--warm-grey);
+    text-transform: uppercase; margin-bottom: 0.8rem;
+  }
+  .tools-list { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 3rem; }
+  .tool-pill {
+    font-family: 'Courier Prime', monospace; font-size: 0.68rem;
+    letter-spacing: 0.08em; color: var(--tint);
+    border: 1px solid rgba(200,169,126,0.25);
+    padding: 0.25rem 0.7rem; opacity: 0.8;
+    transition: opacity 0.3s, border-color 0.3s;
+  }
+  .tool-pill:hover { opacity: 1; border-color: var(--tint); }
 
   /* Section label */
   .section-label {
-    font-family: 'Syncopate', sans-serif;
-    font-size: 0.55rem;
-    letter-spacing: 0.45em;
-    text-transform: uppercase;
-    color: var(--tint);
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
+    font-family: 'Syncopate', sans-serif; font-size: 0.48rem;
+    letter-spacing: 0.42em; text-transform: uppercase;
+    color: var(--tint); margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 1.2rem;
   }
   .section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: currentColor;
-    opacity: 0.2;
+    content: ''; flex: 1; height: 1px;
+    background: currentColor; opacity: 0.18;
   }
 
-  /* Description */
-  .description-text {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(1.3rem, 2.5vw, 2rem);
-    font-weight: 300;
-    line-height: 1.7;
-    color: var(--off-white);
-    max-width: 800px;
-    margin-bottom: 3rem;
+  /* ── PROCESS (horizontal scroll inside left panel) ── */
+  .process-scroll {
+    overflow-x: auto; overflow-y: hidden;
+    scrollbar-width: none; margin: 0 -1rem;
+    padding: 0 1rem 1rem;
   }
-
-  /* Tools pills */
-  .tools-wrap {
-    margin-top: 2rem;
-  }
-  .tools-label {
-    font-family: 'Syncopate', sans-serif;
-    font-size: 0.5rem;
-    letter-spacing: 0.35em;
-    color: var(--warm-grey);
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
-  .tools-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .tool-pill {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    color: var(--tint);
-    border: 1px solid currentColor;
-    padding: 0.3rem 0.8rem;
-    opacity: 0.7;
-    transition: opacity 0.3s;
-  }
-  .tool-pill:hover { opacity: 1; }
-
-  /* ── PROCESS CHART ── */
-  .process-wrap {
-    padding: 4rem 6vw 6rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .process-wrap::-webkit-scrollbar { display: none; }
+  .process-scroll::-webkit-scrollbar { display: none; }
 
   .process-track {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    min-width: max-content;
-    padding: 2rem 0;
+    display: flex; align-items: flex-start;
+    gap: 0; min-width: max-content;
   }
 
   .process-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    width: 260px;
-    flex-shrink: 0;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 0.7rem; width: 140px; flex-shrink: 0;
   }
 
   .step-media-wrap {
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    background: #0d0d0d;
+    width: 100%; position: relative; overflow: hidden; background: #0d0d0d;
   }
   .step-media-wrap.ratio-sq  { aspect-ratio: 1/1; }
   .step-media-wrap.ratio-v   { aspect-ratio: 9/16; }
   .step-media-wrap.ratio-h   { aspect-ratio: 16/9; }
 
-  .step-media {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  /* Placeholder for process steps */
   .step-placeholder {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 0.5rem;
-    background: #0d0d0d;
-    border: 1px dashed rgba(255,255,255,0.08);
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 0.4rem;
+    background: #0d0d0d; border: 1px dashed rgba(255,255,255,0.07);
   }
   .step-placeholder span {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 0.2em;
-    color: rgba(255,255,255,0.2);
-    text-transform: uppercase;
-    text-align: center;
-    padding: 0 1rem;
+    font-family: 'Courier Prime', monospace; font-size: 0.48rem;
+    letter-spacing: 0.15em; color: rgba(255,255,255,0.18);
+    text-transform: uppercase; text-align: center; padding: 0 0.5rem;
   }
 
   .step-label {
-    font-family: 'Syncopate', sans-serif;
-    font-size: 0.48rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--warm-grey);
-    text-align: center;
+    font-family: 'Syncopate', sans-serif; font-size: 0.4rem;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--warm-grey); text-align: center;
   }
 
-  /* Arrow between steps */
   .process-arrow {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 1rem;
-    flex-shrink: 0;
-    margin-bottom: 2.5rem; /* aligns with media, not label */
+    display: flex; align-items: center;
+    padding: 0 0.5rem; flex-shrink: 0;
+    padding-bottom: 1.5rem;
   }
-  .arrow-line {
-    width: 40px;
-    height: 1px;
-    background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
-  }
+  .arrow-line { width: 24px; height: 1px; background: rgba(255,255,255,0.15); }
   .arrow-head {
-    width: 6px;
-    height: 6px;
-    border-right: 1px solid rgba(255,255,255,0.4);
-    border-top: 1px solid rgba(255,255,255,0.4);
-    transform: rotate(45deg) translateX(-3px);
+    width: 5px; height: 5px;
+    border-right: 1px solid rgba(255,255,255,0.3);
+    border-top: 1px solid rgba(255,255,255,0.3);
+    transform: rotate(45deg) translateX(-2px);
     margin-top: -1px;
   }
 
-  /* ── FINAL OUTPUT ── */
-  .final-wrap {
-    padding: 0 6vw 8rem;
-  }
-  .final-media-wrap {
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    background: #0d0d0d;
-    aspect-ratio: 16/9;
-  }
-  .final-media {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .final-placeholder {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #0d0d0d;
-    border: 1px dashed rgba(255,255,255,0.08);
-  }
-  .final-placeholder span {
-    font-family: 'Courier Prime', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.3em;
-    color: rgba(255,255,255,0.15);
-    text-transform: uppercase;
-  }
-
   /* ── NEXT PROJECT ── */
-  #next-project {
-    padding: 4rem 6vw;
+  .next-wrap {
+    margin-top: auto; padding-top: 2.5rem;
     border-top: 1px solid rgba(255,255,255,0.06);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: none;
-    transition: background 0.3s;
+    cursor: none; display: flex;
+    justify-content: space-between; align-items: center;
+    transition: opacity 0.3s;
   }
-  #next-project:hover { background: rgba(255,255,255,0.02); }
+  .next-wrap:hover { opacity: 0.7; }
   .next-label {
-    font-family: 'Syncopate', sans-serif;
-    font-size: 0.5rem;
-    letter-spacing: 0.4em;
-    color: var(--warm-grey);
-    text-transform: uppercase;
+    font-family: 'Syncopate', sans-serif; font-size: 0.44rem;
+    letter-spacing: 0.35em; color: var(--warm-grey); text-transform: uppercase;
   }
   .next-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(1.5rem, 3vw, 2.5rem);
-    font-weight: 300;
-    font-style: italic;
-    color: var(--off-white);
-    margin-top: 0.5rem;
+    font-size: clamp(1.2rem, 2vw, 1.8rem);
+    font-weight: 300; font-style: italic; color: var(--off-white);
+    margin-top: 0.3rem;
   }
   .next-arrow {
-    font-size: 2rem;
-    color: var(--warm-grey);
+    font-size: 1.5rem; color: var(--warm-grey);
     transition: transform 0.3s, color 0.3s;
   }
-  #next-project:hover .next-arrow {
-    transform: translateX(10px);
-    color: var(--off-white);
+  .next-wrap:hover .next-arrow { transform: translateX(8px); color: var(--off-white); }
+
+  /* ── RIGHT PANEL ── */
+  .right-panel {
+    position: sticky; top: 0; height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: #020202;
+    overflow: hidden;
   }
 
-  /* ── RESPONSIVE — MOBILE ── */
-  @media (max-width: 768px) {
+  /* Subtle grain on right panel */
+  .right-panel::before {
+    content: '';
+    position: absolute; inset: 0; z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none; opacity: 0.5;
+  }
 
-    /* Hide custom cursor */
+  .final-output-wrap {
+    position: relative; z-index: 2;
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 4rem 2rem;
+  }
+
+  .final-media-container {
+    width: 100%; max-height: 90vh;
+    position: relative; background: #080808;
+    overflow: hidden;
+  }
+
+  /* aspect ratio set by JS */
+  .final-media-container iframe,
+  .final-media-container video,
+  .final-media-container img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover; border: none;
+  }
+
+  .final-label {
+    position: absolute; bottom: -2rem; left: 0;
+    font-family: 'Syncopate', sans-serif; font-size: 0.44rem;
+    letter-spacing: 0.4em; color: rgba(160,154,144,0.35);
+    text-transform: uppercase;
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
     .cursor, .cursor-ring { display: none; }
     body { cursor: auto; }
-    #exit-btn, #next-project { cursor: pointer; }
+    #exit-btn { cursor: pointer; top: 1rem; left: 1.2rem; font-size: 0.55rem; }
 
-    /* Exit button — easier to tap */
-    #exit-btn {
-      top: 1.2rem;
-      right: 1.5rem;
-      font-size: 0.6rem;
-      padding: 0.6rem 0;
+    .page-wrap { grid-template-columns: 1fr; min-height: unset; }
+
+    /* On mobile: right panel goes first (top), left panel below */
+    .right-panel {
+      position: relative; height: 60vw; min-height: 260px;
+      order: -1; top: unset;
+    }
+    .final-output-wrap { padding: 1.5rem; }
+
+    .left-panel {
+      position: relative; height: auto; overflow-y: visible;
+      padding: 3rem 5vw 4rem;
+      border-right: none;
+      border-top: 1px solid rgba(255,255,255,0.05);
     }
 
-    /* Hero */
-    #hero { height: 100svh; }
-    .hero-content { padding: 2.5rem 5vw; }
-    .hero-title { font-size: clamp(2.5rem, 11vw, 4rem); }
-    .hero-meta { flex-direction: column; gap: 1rem; margin-top: 1rem; }
-    .meta-value { font-size: 0.9rem; }
-
-    /* Content section */
-    .content-wrap { padding: 3.5rem 5vw; }
-    .description-text { font-size: clamp(1.1rem, 4.5vw, 1.5rem); margin-bottom: 2rem; }
-
-    /* Process — stays horizontal scroll (works great on mobile) */
-    .process-wrap { padding: 2rem 5vw 4rem; }
-    .process-step { width: 200px; }
-
-    /* Final output */
-    .final-wrap { padding: 0 5vw 5rem; }
-    .final-media-wrap { aspect-ratio: 9/16; } /* portrait on mobile feels better */
-
-    /* Next project */
-    #next-project { padding: 3rem 5vw; }
-    .next-title { font-size: clamp(1.3rem, 6vw, 2rem); }
+    .proj-title { font-size: clamp(2.5rem, 10vw, 4rem); }
+    .proj-meta-row { gap: 1.5rem; }
+    .proj-description { font-size: clamp(1rem, 4vw, 1.2rem); }
+    .process-step { width: 110px; }
+    .next-wrap { cursor: pointer; }
   }
 
   @media (max-width: 400px) {
-    .hero-title { font-size: clamp(2rem, 12vw, 3rem); }
-    .process-step { width: 160px; }
+    .right-panel { height: 70vw; }
+    .process-step { width: 90px; }
   }
 
-  /* ── YOUTUBE EMBED ── */
-  .youtube-wrap {
-    width: 100%;
-    position: relative;
-    aspect-ratio: 16/9;
-    background: #000;
-    overflow: hidden;
-  }
-  .youtube-wrap.shorts {
-    aspect-ratio: 9/16;
-    max-width: 420px;
+  /* Shorts aspect (9:16) */
+  .final-media-container.shorts {
+    max-width: 320px;
     margin: 0 auto;
-  }
-  .youtube-wrap iframe {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
   }
 </style>
 </head>
 <body>
 
-<!-- CURSOR -->
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
-
-<!-- CATEGORY TINT -->
 <div class="tint-overlay" id="tintOverlay"></div>
-
-<!-- GLITCH EXIT -->
 <div id="glitch-overlay"></div>
 <canvas id="glitch-canvas"></canvas>
-
-<!-- EXIT BUTTON -->
 <div id="exit-btn">EXIT</div>
 
-<!-- ── HERO ── -->
-<section id="hero">
-  <div id="hero-media-wrap">
-    <!-- JS injects <img> or <video> here -->
-  </div>
-  <div class="hero-gradient"></div>
-  <div class="hero-content">
-    <div class="hero-category" id="hero-category"></div>
-    <h1 class="hero-title" id="hero-title"></h1>
-    <div class="hero-meta">
-      <div class="hero-meta-item">
+<!-- ── TWO COLUMN LAYOUT ── -->
+<div class="page-wrap">
+
+  <!-- LEFT: info + process + next -->
+  <div class="left-panel" id="left-panel">
+
+    <div class="proj-meta-top">
+      <span class="proj-category" id="proj-category"></span>
+      <div class="proj-category-line"></div>
+    </div>
+
+    <h1 class="proj-title" id="proj-title"></h1>
+
+    <div class="proj-meta-row" id="proj-meta-row">
+      <div class="meta-item">
         <span class="meta-label">Year</span>
         <span class="meta-value" id="meta-year"></span>
       </div>
-      <div class="hero-meta-item">
+      <div class="meta-item">
         <span class="meta-label">Type</span>
         <span class="meta-value" id="meta-type"></span>
       </div>
-      <div class="hero-meta-item" id="meta-award-wrap" style="display:none">
-        <span class="meta-label">Award</span>
-        <span class="meta-value" id="meta-award"></span>
+    </div>
+
+    <div class="award-badge" id="award-badge" style="display:none"></div>
+
+    <p class="proj-description" id="proj-description"></p>
+
+    <div class="tools-label">Tools Used</div>
+    <div class="tools-list" id="tools-list"></div>
+
+    <div class="section-label">Process</div>
+    <div class="process-scroll">
+      <div class="process-track" id="process-track"></div>
+    </div>
+
+    <div class="next-wrap" id="next-wrap">
+      <div>
+        <div class="next-label">Next Project</div>
+        <div class="next-title" id="next-title">—</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: final output -->
+  <div class="right-panel">
+    <div class="final-output-wrap">
+      <div style="position:relative;width:100%;">
+        <div class="final-media-container" id="final-media-container">
+          <!-- filled by JS -->
+        </div>
+        <div class="final-label">Final Output</div>
       </div>
     </div>
   </div>
-</section>
 
-<!-- ── DESCRIPTION ── -->
-<div class="content-wrap">
-  <div class="section-label">About the project</div>
-  <p class="description-text" id="project-description">
-    <!-- filled by JS -->
-  </p>
-  <div class="tools-wrap">
-    <div class="tools-label">Tools used</div>
-    <div class="tools-list" id="tools-list"></div>
-  </div>
-</div>
-
-<!-- ── PROCESS ── -->
-<div style="padding: 0 6vw 1rem;">
-  <div class="section-label">Process</div>
-</div>
-<div class="process-wrap">
-  <div class="process-track" id="process-track">
-    <!-- filled by JS -->
-  </div>
-</div>
-
-<!-- ── FINAL OUTPUT ── -->
-<div class="final-wrap">
-  <div class="section-label" style="margin-bottom: 1.5rem;">Final Output</div>
-  <div class="final-media-wrap" id="final-media-wrap">
-    <div class="final-placeholder"><span>Add final output file here</span></div>
-  </div>
-</div>
-
-<!-- ── NEXT PROJECT ── -->
-<div id="next-project">
-  <div>
-    <div class="next-label">Next Project</div>
-    <div class="next-title" id="next-title">—</div>
-  </div>
-  <div class="next-arrow">→</div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-// PROJECT DATA
-// To add a new project: copy one entry and fill it in.
-// For process steps: add as many objects as you need.
-// ═══════════════════════════════════════════════════════
 const PROJECTS = {
 
   'unwritten': {
@@ -604,9 +450,10 @@ const PROJECTS = {
     tools: ['Runway', 'Kling', 'Seedance', 'ElevenLabs', 'CapCut', 'After Effects'],
     heroMedia: { type: 'image', src: 'projects/unwritten.jpg' },
     finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/CJJxKTjshgc?autoplay=1&mute=0&loop=1&playlist=CJJxKTjshgc&playsinline=1&rel=0' },
+    finalRatio: '16/9',
     process: [
       { label: 'Concept & Script', placeholder: 'Script / Storyboard', ratio: 'ratio-sq' },
-      { label: 'AI Image Generation', placeholder: 'Reference Frames', ratio: 'ratio-sq' },
+      { label: 'AI Image Gen', placeholder: 'Reference Frames', ratio: 'ratio-sq' },
       { label: 'Video Generation', placeholder: 'Raw AI Clips', ratio: 'ratio-h' },
       { label: 'Sound Design', placeholder: 'Audio / ElevenLabs', ratio: 'ratio-sq' },
       { label: 'Editing & Colour', placeholder: 'Final Edit', ratio: 'ratio-h' },
@@ -625,6 +472,7 @@ const PROJECTS = {
     tools: ['Runway', 'Midjourney', 'After Effects', 'ElevenLabs'],
     heroMedia: { type: 'image', src: 'projects/honeypocalypse.jpg' },
     finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/VX66QxEAzac?autoplay=1&mute=0&loop=1&playlist=VX66QxEAzac&playsinline=1&rel=0' },
+    finalRatio: '16/9',
     process: [
       { label: 'Concept', placeholder: 'Concept / Moodboard', ratio: 'ratio-sq' },
       { label: 'Image Generation', placeholder: 'AI Images', ratio: 'ratio-sq' },
@@ -639,15 +487,16 @@ const PROJECTS = {
     category: '3D & Animation',
     categoryKey: '3d',
     year: '2024',
-    type: '3D Scanning · Modelling · Animation · Lookdev · Lighting',
+    type: '3D Scanning · Animation · Lookdev',
     description: 'A conceptual 3D piece exploring the idea of gifting in the digital age — scanning real objects and translating them into virtual keepsakes.',
     tools: ['Blender', 'Substance Painter', 'Reality Capture', 'After Effects'],
     heroMedia: { type: 'image', src: 'projects/digital-gift.jpg' },
     finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/7NDVmeWysZM?autoplay=1&mute=0&loop=1&playlist=7NDVmeWysZM&playsinline=1&rel=0' },
+    finalRatio: '9/16',
     process: [
       { label: '3D Scanning', placeholder: 'Raw Scan', ratio: 'ratio-sq' },
       { label: 'Mesh Cleanup', placeholder: 'Clean Mesh', ratio: 'ratio-sq' },
-      { label: 'Texturing', placeholder: 'Textured Model', ratio: 'ratio-sq' },
+      { label: 'Texturing', placeholder: 'Textured', ratio: 'ratio-sq' },
       { label: 'Lighting', placeholder: 'Lit Scene', ratio: 'ratio-sq' },
       { label: 'Animation', placeholder: 'Animated', ratio: 'ratio-sq' },
     ],
@@ -663,10 +512,11 @@ const PROJECTS = {
     description: 'A real-time reactive DJ set visualizer built entirely with Geometry Nodes in Blender. The geometry responds to music rhythm and frequency.',
     tools: ['Blender', 'Geometry Nodes', 'After Effects'],
     heroMedia: { type: 'image', src: 'projects/again-again-again.jpg' },
-    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/Q3M7nt_O3gc?autoplay=1&mute=0&loop=1&playlist=Q3M7nt_O3gc&playsinline=1&rel=0' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/HLCWgdMRBs0?autoplay=1&mute=0&loop=1&playlist=HLCWgdMRBs0&playsinline=1&rel=0' },
+    finalRatio: '9/16',
     process: [
       { label: 'Reference & Concept', placeholder: 'Moodboard', ratio: 'ratio-sq' },
-      { label: 'Geometry Nodes Setup', placeholder: 'Node Graph', ratio: 'ratio-h' },
+      { label: 'Geometry Nodes', placeholder: 'Node Graph', ratio: 'ratio-h' },
       { label: 'Motion & Rhythm', placeholder: 'Animation Test', ratio: 'ratio-sq' },
       { label: 'Lookdev', placeholder: 'Shading', ratio: 'ratio-sq' },
     ],
@@ -678,11 +528,12 @@ const PROJECTS = {
     category: '3D & Animation',
     categoryKey: '3d',
     year: '2023',
-    type: 'Music Album Art · 3D Modelling · Lookdev · Lighting',
+    type: 'Music Album Art · Lookdev',
     description: 'Album art created for an independent musician. A portrait rendered in 3D — soft lighting, emotional colour palette, and cinematic composition.',
     tools: ['Blender', 'Substance Painter', 'Photoshop'],
     heroMedia: { type: 'image', src: 'projects/her.jpg' },
     finalMedia: { type: 'image', src: 'projects/her.jpg' },
+    finalRatio: '1/1',
     process: [
       { label: 'Brief & Reference', placeholder: 'Moodboard', ratio: 'ratio-sq' },
       { label: 'Base Mesh', placeholder: 'Raw Model', ratio: 'ratio-sq' },
@@ -698,11 +549,12 @@ const PROJECTS = {
     category: '3D & Animation',
     categoryKey: '3d',
     year: '2023',
-    type: 'Particle System · 3D Modelling · Lookdev · Lighting',
+    type: 'Particle System · Lookdev · Lighting',
     description: 'An exploration of generative systems — particle simulations colliding with 3D geometry to create an organic yet mathematical visual language.',
     tools: ['Blender', 'Geometry Nodes', 'After Effects'],
     heroMedia: { type: 'image', src: 'projects/generate.jpg' },
     finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/XnMKcaRAyjk?autoplay=1&mute=0&loop=1&playlist=XnMKcaRAyjk&playsinline=1&rel=0' },
+    finalRatio: '16/9',
     process: [
       { label: 'Concept', placeholder: 'Sketch / Reference', ratio: 'ratio-sq' },
       { label: 'Particle Setup', placeholder: 'Simulation', ratio: 'ratio-h' },
@@ -722,6 +574,7 @@ const PROJECTS = {
     tools: ['Blender', 'Geometry Nodes', 'After Effects'],
     heroMedia: { type: 'image', src: 'projects/skc-visualiser.jpg' },
     finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/HPGOP0_3n1o?autoplay=1&mute=0&loop=1&playlist=HPGOP0_3n1o&playsinline=1&rel=0' },
+    finalRatio: '9/16',
     process: [
       { label: 'Brief', placeholder: 'Music Reference', ratio: 'ratio-sq' },
       { label: 'Geometry Build', placeholder: 'Node Setup', ratio: 'ratio-h' },
@@ -741,6 +594,7 @@ const PROJECTS = {
     tools: ['Blender', 'ZBrush', 'Substance Painter'],
     heroMedia: { type: 'image', src: 'projects/zablien.jpg' },
     finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/UX0iIUSXqNw?autoplay=1&mute=0&loop=1&playlist=UX0iIUSXqNw&playsinline=1&rel=0' },
+    finalRatio: '16/9',
     process: [
       { label: 'Concept Sketch', placeholder: 'Sketch', ratio: 'ratio-sq' },
       { label: 'Base Mesh', placeholder: 'Blockout', ratio: 'ratio-sq' },
@@ -758,8 +612,9 @@ const PROJECTS = {
     type: 'Print + AR Experience',
     description: 'A physical print that comes alive through AR — scan the artwork and watch the 3D world emerge from the page.',
     tools: ['Blender', 'Adobe Aero', 'Illustrator'],
-    heroMedia: { type: 'video', src: 'projects/cube-ar.mp4' },
-    finalMedia: { type: 'video', src: 'projects/cube-ar.mp4' },
+    heroMedia: { type: 'image', src: 'projects/cube-ar.png' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/pPlMQXJsHss?autoplay=1&mute=0&loop=1&playlist=pPlMQXJsHss&playsinline=1&rel=0' },
+    finalRatio: '9/16',
     process: [
       { label: 'Print Design', placeholder: 'Illustration', ratio: 'ratio-sq' },
       { label: '3D Asset Build', placeholder: '3D Model', ratio: 'ratio-sq' },
@@ -777,8 +632,9 @@ const PROJECTS = {
     type: 'Painting + AR Experience',
     description: 'A hand-painted canvas that activates an AR layer — merging traditional painting with augmented reality to create a living artwork.',
     tools: ['Blender', 'Adobe Aero', 'Procreate'],
-    heroMedia: { type: 'video', src: 'projects/frontiminati.mp4' },
-    finalMedia: { type: 'video', src: 'projects/frontiminati.mp4' },
+    heroMedia: { type: 'image', src: 'projects/frontiminati.png' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/ax4OxKwETnQ?autoplay=1&mute=0&loop=1&playlist=ax4OxKwETnQ&playsinline=1&rel=0' },
+    finalRatio: '9/16',
     process: [
       { label: 'Painting', placeholder: 'Original Artwork', ratio: 'ratio-sq' },
       { label: '3D Layer', placeholder: '3D Asset', ratio: 'ratio-sq' },
@@ -795,8 +651,9 @@ const PROJECTS = {
     type: 'NFT · Sold',
     description: 'An original NFT character collection — conceptualised, modelled and sold independently. A commentary on crypto culture through character design.',
     tools: ['Blender', 'Substance Painter', 'Photoshop'],
-    heroMedia: { type: 'video', src: 'projects/cryptominati.mp4' },
-    finalMedia: { type: 'video', src: 'projects/cryptominati.mp4' },
+    heroMedia: { type: 'image', src: 'projects/cryptominati.png' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/YKG9_JNUpts?autoplay=1&mute=0&loop=1&playlist=YKG9_JNUpts&playsinline=1&rel=0' },
+    finalRatio: '16/9',
     process: [
       { label: 'Concept', placeholder: 'Sketch', ratio: 'ratio-sq' },
       { label: 'Modelling', placeholder: 'Base Model', ratio: 'ratio-sq' },
@@ -814,8 +671,9 @@ const PROJECTS = {
     type: 'NFT · Sold',
     description: 'A culturally rooted NFT piece — drawing from the evil eye symbol and reinterpreting it through a 3D digital lens.',
     tools: ['Blender', 'Substance Painter'],
-    heroMedia: { type: 'video', src: 'projects/no-nazar.mp4' },
-    finalMedia: { type: 'video', src: 'projects/no-nazar.mp4' },
+    heroMedia: { type: 'image', src: 'projects/no-nazar.png' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/h6gU6xDz6Mc?autoplay=1&mute=0&loop=1&playlist=h6gU6xDz6Mc&playsinline=1&rel=0' },
+    finalRatio: '9/16',
     process: [
       { label: 'Research', placeholder: 'Reference Images', ratio: 'ratio-sq' },
       { label: 'Modelling', placeholder: 'Model', ratio: 'ratio-sq' },
@@ -832,8 +690,9 @@ const PROJECTS = {
     type: 'Concept · 3D Modelling',
     description: 'A conceptual 3D character — IAMAISHA is an identity exploration piece, building a digital persona from scratch.',
     tools: ['Blender', 'Substance Painter', 'ZBrush'],
-    heroMedia: { type: 'video', src: 'projects/iamaisha.mp4' },
+    heroMedia: { type: 'image', src: 'projects/iamaisha.png' },
     finalMedia: { type: 'video', src: 'projects/iamaisha.mp4' },
+    finalRatio: '1/1',
     process: [
       { label: 'Concept', placeholder: 'Sketch', ratio: 'ratio-sq' },
       { label: 'Modelling', placeholder: 'Model', ratio: 'ratio-sq' },
@@ -850,8 +709,9 @@ const PROJECTS = {
     type: 'Concept · 3D Modelling',
     description: 'A character study built around a fictional persona — exploring personality through form, texture and posture.',
     tools: ['Blender', 'Substance Painter'],
-    heroMedia: { type: 'video', src: 'projects/pedro-amos.mp4' },
-    finalMedia: { type: 'video', src: 'projects/pedro-amos.mp4' },
+    heroMedia: { type: 'image', src: 'projects/pedro-amos.png' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/DJSyEFizdIA?autoplay=1&mute=0&loop=1&playlist=DJSyEFizdIA&playsinline=1&rel=0' },
+    finalRatio: '9/16',
     process: [
       { label: 'Concept', placeholder: 'Reference', ratio: 'ratio-sq' },
       { label: 'Modelling', placeholder: 'Model', ratio: 'ratio-sq' },
@@ -868,8 +728,9 @@ const PROJECTS = {
     type: 'Concept · 3D Modelling',
     description: 'A collection of absurdist 3D characters — larva-inspired creatures with distinct personalities, built as a conceptual NFT series.',
     tools: ['Blender', 'Substance Painter'],
-    heroMedia: { type: 'video', src: 'projects/larva-lads.mp4' },
-    finalMedia: { type: 'video', src: 'projects/larva-lads.mp4' },
+    heroMedia: { type: 'image', src: 'projects/larva-lads.png' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/SQBxPCQwxnY?autoplay=1&mute=0&loop=1&playlist=SQBxPCQwxnY&playsinline=1&rel=0' },
+    finalRatio: '9/16',
     process: [
       { label: 'Concept', placeholder: 'Sketches', ratio: 'ratio-sq' },
       { label: 'Modelling', placeholder: 'Characters', ratio: 'ratio-sq' },
@@ -886,8 +747,9 @@ const PROJECTS = {
     type: '3D Print · RTFKT Creator Challenge',
     description: 'An entry for the RTFKT Creator Challenge — a floral 3D printed wearable object designed for the boundary between digital and physical fashion.',
     tools: ['Blender', 'Chitubox', '3D Printer'],
-    heroMedia: { type: 'video', src: 'projects/fleurz.mp4' },
-    finalMedia: { type: 'video', src: 'projects/fleurz.mp4' },
+    heroMedia: { type: 'image', src: 'projects/fleurz.png' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/P9qDlWanmks?autoplay=1&mute=0&loop=1&playlist=P9qDlWanmks&playsinline=1&rel=0' },
+    finalRatio: '9/16',
     process: [
       { label: 'Design Brief', placeholder: 'Concept', ratio: 'ratio-sq' },
       { label: '3D Model', placeholder: 'Digital Model', ratio: 'ratio-sq' },
@@ -905,8 +767,9 @@ const PROJECTS = {
     type: '3D Print',
     description: 'A functional 3D printed salad bowl — exploring how everyday objects can be reimagined through digital fabrication.',
     tools: ['Blender', 'Chitubox', '3D Printer'],
-    heroMedia: { type: 'image', src: 'projects/mixt.jpg' },
-    finalMedia: { type: 'image', src: 'projects/mixt.jpg' },
+    heroMedia: { type: 'image', src: 'projects/mixt.png' },
+    finalMedia: { type: 'image', src: 'projects/mixt.png' },
+    finalRatio: '1/1',
     process: [
       { label: 'Form Exploration', placeholder: 'Sketches', ratio: 'ratio-sq' },
       { label: '3D Model', placeholder: 'Digital Model', ratio: 'ratio-sq' },
@@ -925,6 +788,7 @@ const PROJECTS = {
     tools: ['Illustrator', 'Photoshop'],
     heroMedia: { type: 'image', src: 'projects/mueshi-logo.jpg' },
     finalMedia: { type: 'image', src: 'projects/mueshi-logo.jpg' },
+    finalRatio: '1/1',
     process: [
       { label: 'Brief', placeholder: 'Brand Brief', ratio: 'ratio-sq' },
       { label: 'Sketches', placeholder: 'Logo Sketches', ratio: 'ratio-sq' },
@@ -944,6 +808,7 @@ const PROJECTS = {
     tools: ['InDesign', 'Photoshop', 'Illustrator'],
     heroMedia: { type: 'image', src: 'projects/twitch-book.jpg' },
     finalMedia: { type: 'image', src: 'projects/twitch-book.jpg' },
+    finalRatio: '16/9',
     process: [
       { label: 'Content Structure', placeholder: 'Outline', ratio: 'ratio-sq' },
       { label: 'Layout Design', placeholder: 'Grid Layout', ratio: 'ratio-h' },
@@ -963,6 +828,7 @@ const PROJECTS = {
     tools: ['InDesign', 'Illustrator', 'Photoshop'],
     heroMedia: { type: 'image', src: 'projects/prince-hyundai.jpg' },
     finalMedia: { type: 'image', src: 'projects/prince-hyundai.jpg' },
+    finalRatio: '9/16',
     process: [
       { label: 'Brief', placeholder: 'Brand Guidelines', ratio: 'ratio-sq' },
       { label: 'Layout', placeholder: 'Grid', ratio: 'ratio-h' },
@@ -981,6 +847,7 @@ const PROJECTS = {
     tools: ['Figma', 'Notion', 'Canva', 'Meta Ads'],
     heroMedia: { type: 'image', src: 'projects/uxmagic.jpg' },
     finalMedia: { type: 'image', src: 'projects/uxmagic.jpg' },
+    finalRatio: '16/9',
     process: [
       { label: 'Strategy', placeholder: 'Marketing Plan', ratio: 'ratio-h' },
       { label: 'Content Creation', placeholder: 'Assets', ratio: 'ratio-sq' },
@@ -997,8 +864,9 @@ const PROJECTS = {
     type: 'Instagram Animation · Figma',
     description: 'An animated Instagram post for TSDC\'s IRL pop-up event — designed in Figma and animated for social media.',
     tools: ['Figma', 'After Effects'],
-    heroMedia: { type: 'video', src: 'projects/tsdc.mp4' },
+    heroMedia: { type: 'image', src: 'projects/tsdc.png' },
     finalMedia: { type: 'video', src: 'projects/tsdc.mp4' },
+    finalRatio: '9/16',
     process: [
       { label: 'Brief', placeholder: 'Event Brief', ratio: 'ratio-sq' },
       { label: 'Design', placeholder: 'Figma Frame', ratio: 'ratio-sq' },
@@ -1017,6 +885,7 @@ const PROJECTS = {
     tools: ['Draping', 'Pattern Cutting', 'Sewing', 'Photoshop'],
     heroMedia: { type: 'image', src: 'projects/twitch-fashion.jpg' },
     finalMedia: { type: 'image', src: 'projects/twitch-fashion.jpg' },
+    finalRatio: '16/9',
     process: [
       { label: 'Research', placeholder: 'Research Board', ratio: 'ratio-sq' },
       { label: 'Concept', placeholder: 'Concept Sketches', ratio: 'ratio-v' },
@@ -1037,6 +906,7 @@ const PROJECTS = {
     tools: ['Illustrator', 'Photoshop', 'InDesign'],
     heroMedia: { type: 'image', src: 'projects/sisozo.jpg' },
     finalMedia: { type: 'image', src: 'projects/sisozo.jpg' },
+    finalRatio: '9/16',
     process: [
       { label: 'Brand Research', placeholder: 'Moodboard', ratio: 'ratio-sq' },
       { label: 'Identity Design', placeholder: 'Logo & Palette', ratio: 'ratio-sq' },
@@ -1055,6 +925,7 @@ const PROJECTS = {
     tools: ['Photoshop', 'InDesign', 'Physical Materials'],
     heroMedia: { type: 'image', src: 'projects/chaos.jpg' },
     finalMedia: { type: 'image', src: 'projects/chaos.jpg' },
+    finalRatio: '16/9',
     process: [
       { label: 'Research', placeholder: 'References', ratio: 'ratio-sq' },
       { label: 'Concept Development', placeholder: 'Concept Board', ratio: 'ratio-h' },
@@ -1073,6 +944,7 @@ const PROJECTS = {
     tools: ['Photoshop', 'InDesign', 'Photography'],
     heroMedia: { type: 'image', src: 'projects/drama.jpg' },
     finalMedia: { type: 'image', src: 'projects/drama.jpg' },
+    finalRatio: '9/16',
     process: [
       { label: 'Concept', placeholder: 'Moodboard', ratio: 'ratio-sq' },
       { label: 'Direction', placeholder: 'Shot List', ratio: 'ratio-sq' },
@@ -1091,6 +963,7 @@ const PROJECTS = {
     tools: ['Draping', 'Muslin', 'Pattern Cutting'],
     heroMedia: { type: 'image', src: 'projects/layering.jpg' },
     finalMedia: { type: 'image', src: 'projects/layering.jpg' },
+    finalRatio: '9/16',
     process: [
       { label: 'Fabric Study', placeholder: 'Fabric Tests', ratio: 'ratio-sq' },
       { label: 'Draping', placeholder: 'On Stand', ratio: 'ratio-v' },
@@ -1109,6 +982,7 @@ const PROJECTS = {
     tools: ['Draping', 'Mixed Materials', 'Photography'],
     heroMedia: { type: 'image', src: 'projects/clumsy.jpg' },
     finalMedia: { type: 'image', src: 'projects/clumsy.jpg' },
+    finalRatio: '1/1',
     process: [
       { label: 'Experiments', placeholder: 'Material Tests', ratio: 'ratio-sq' },
       { label: 'Form Building', placeholder: 'Process Shots', ratio: 'ratio-sq' },
@@ -1119,9 +993,6 @@ const PROJECTS = {
 
 };
 
-// ═══════════════════════════════════════════════════════
-// CATEGORY CONFIG
-// ═══════════════════════════════════════════════════════
 const CATEGORY_CONFIG = {
   ai:      { color: '#7eb8c8', tintBg: 'radial-gradient(ellipse at top left, rgba(126,184,200,0.08) 0%, transparent 60%)' },
   '3d':    { color: '#c8a97e', tintBg: 'radial-gradient(ellipse at top left, rgba(200,169,126,0.08) 0%, transparent 60%)' },
@@ -1129,89 +1000,52 @@ const CATEGORY_CONFIG = {
   fashion: { color: '#c87ea0', tintBg: 'radial-gradient(ellipse at top left, rgba(200,126,160,0.08) 0%, transparent 60%)' },
 };
 
-// ═══════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════
+// ── Init ──
 const params = new URLSearchParams(window.location.search);
 const projectId = params.get('p') || 'unwritten';
 const returnSection = params.get('from') || '';
 const project = PROJECTS[projectId];
-
-if (!project) {
-  window.location.href = 'index.html';
-}
+if (!project) { window.location.href = 'index.html'; }
 
 const cat = CATEGORY_CONFIG[project.categoryKey];
-
-// Apply category tint
 document.documentElement.style.setProperty('--tint', cat.color);
 document.getElementById('tintOverlay').style.background = cat.tintBg;
-
-// Page title
 document.title = `${project.title} — Saloni`;
 
-// Hero
-document.getElementById('hero-category').textContent = project.category;
-document.getElementById('hero-category').style.color = cat.color;
-document.getElementById('hero-title').textContent = project.title;
+// Fill left panel
+document.getElementById('proj-category').textContent = project.category;
+document.getElementById('proj-title').textContent = project.title;
 document.getElementById('meta-year').textContent = project.year;
 document.getElementById('meta-type').textContent = project.type;
 
 if (project.award) {
-  document.getElementById('meta-award-wrap').style.display = 'flex';
-  document.getElementById('meta-award').textContent = project.award;
+  const badge = document.getElementById('award-badge');
+  badge.style.display = 'inline-flex';
+  badge.textContent = project.award;
 }
 
-// Hero media
-const heroWrap = document.getElementById('hero-media-wrap');
-heroWrap.style.cssText = 'position:absolute;inset:0;';
-if (project.heroMedia.type === 'video') {
-  heroWrap.innerHTML = `<video id="hero-media" src="${project.heroMedia.src}" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.55;"></video>`;
-  // Try to play with audio — works on mobile because the user just tapped a card (valid gesture)
-  const heroVid = heroWrap.querySelector('video');
-  if (heroVid) {
-    heroVid.muted = false;
-    heroVid.volume = 0.85;
-    heroVid.play().catch(() => {
-      // Browser blocked unmuted — fall back silently to muted
-      heroVid.muted = true;
-      heroVid.play().catch(() => {});
-    });
-  }
-} else {
-  heroWrap.innerHTML = `<img id="hero-media" src="${project.heroMedia.src}" alt="${project.title}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.55;">`;
-}
-
-// Description
-document.getElementById('project-description').textContent = project.description;
+document.getElementById('proj-description').textContent = project.description;
 
 // Tools
 const toolsList = document.getElementById('tools-list');
 project.tools.forEach(tool => {
-  const pill = document.createElement('div');
-  pill.className = 'tool-pill';
-  pill.textContent = tool;
-  toolsList.appendChild(pill);
+  const p = document.createElement('div');
+  p.className = 'tool-pill'; p.textContent = tool;
+  toolsList.appendChild(p);
 });
 
-// Process chart
+// Process
 const track = document.getElementById('process-track');
 project.process.forEach((step, i) => {
-  // Step
   const stepEl = document.createElement('div');
   stepEl.className = 'process-step';
   stepEl.innerHTML = `
     <div class="step-media-wrap ${step.ratio}">
-      <div class="step-placeholder">
-        <span>${step.placeholder}</span>
-        <span style="opacity:0.4;font-size:0.45rem;">add file to projects/process/${projectId}-${i+1}.jpg</span>
-      </div>
+      <div class="step-placeholder"><span>${step.placeholder}</span></div>
     </div>
     <div class="step-label">${step.label}</div>
   `;
   track.appendChild(stepEl);
-
-  // Arrow (not after last step)
   if (i < project.process.length - 1) {
     const arrow = document.createElement('div');
     arrow.className = 'process-arrow';
@@ -1220,142 +1054,84 @@ project.process.forEach((step, i) => {
   }
 });
 
-// Final media
-const finalWrap = document.getElementById('final-media-wrap');
+// Final output (right panel)
+const container = document.getElementById('final-media-container');
+const ratio = project.finalRatio || '16/9';
+const isShorts = ratio === '9/16';
+
+container.style.aspectRatio = ratio;
+if (isShorts) {
+  container.classList.add('shorts');
+  container.style.maxWidth = '340px';
+}
+
 if (project.finalMedia.type === 'youtube') {
-  const isShorts = project.finalMedia.src.includes('shorts') ||
-    (() => { try { const u = new URL(project.finalMedia.src); const p = u.searchParams.get('playlist'); return false; } catch(e){ return false; } })();
-  // Detect shorts by aspect ratio hint in src
-  const shortsMode = project.finalMedia.src.includes('shorts') ||
-    (project.finalMedia.src.match(/embed\/([A-Za-z0-9_-]+)/) &&
-     ['7NDVmeWysZM','HPGOP0_3n1o'].includes(project.finalMedia.src.match(/embed\/([A-Za-z0-9_-]+)/)[1]));
-  finalWrap.style.aspectRatio = shortsMode ? '9/16' : '16/9';
-  if (shortsMode) { finalWrap.style.maxWidth = '420px'; finalWrap.style.margin = '0 auto'; }
-  finalWrap.innerHTML = `<iframe src="${project.finalMedia.src}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+  container.innerHTML = `<iframe src="${project.finalMedia.src}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
 } else if (project.finalMedia.type === 'video') {
-  finalWrap.innerHTML = `<video class="final-media" src="${project.finalMedia.src}" autoplay muted loop playsinline></video>`;
-  const finalVid = finalWrap.querySelector('video');
-  if (finalVid) {
-    finalVid.muted = false; finalVid.volume = 0.85;
-    finalVid.play().catch(() => { finalVid.muted = true; finalVid.play().catch(() => {}); });
+  container.innerHTML = `<video src="${project.finalMedia.src}" autoplay muted loop playsinline></video>`;
+  const vid = container.querySelector('video');
+  if (vid) {
+    vid.muted = false; vid.volume = 0.85;
+    vid.play().catch(() => { vid.muted = true; vid.play().catch(() => {}); });
   }
 } else {
-  finalWrap.innerHTML = `<img class="final-media" src="${project.finalMedia.src}" alt="${project.title} final">`;
+  container.innerHTML = `<img src="${project.finalMedia.src}" alt="${project.title}">`;
 }
 
 // Next project
-const nextId = project.next;
-const nextProject = PROJECTS[nextId];
+const nextProject = PROJECTS[project.next];
 if (nextProject) {
   document.getElementById('next-title').textContent = nextProject.title;
-  document.getElementById('next-project').addEventListener('click', () => {
-    window.location.href = `project.html?p=${nextId}`;
+  document.getElementById('next-wrap').addEventListener('click', () => {
+    window.location.href = `project.html?p=${project.next}`;
   });
 }
 
 // ── Fade in ──
-requestAnimationFrame(() => {
-  setTimeout(() => document.body.classList.add('visible'), 50);
-});
+requestAnimationFrame(() => setTimeout(() => document.body.classList.add('visible'), 50));
 
-// ═══════════════════════════════════════════════════════
-// GLITCH EXIT ANIMATION
-// ═══════════════════════════════════════════════════════
-const glitchOverlay = document.getElementById('glitch-overlay');
+// ── Glitch exit ──
 const glitchCanvas = document.getElementById('glitch-canvas');
 const glitchCtx = glitchCanvas.getContext('2d');
-
-function resizeCanvas() {
-  glitchCanvas.width = window.innerWidth;
-  glitchCanvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+function resizeGlitch() { glitchCanvas.width = window.innerWidth; glitchCanvas.height = window.innerHeight; }
+resizeGlitch(); window.addEventListener('resize', resizeGlitch);
 
 function runGlitchExit() {
-  let frame = 0;
-  const totalFrames = 40;
+  let frame = 0; const total = 40;
   glitchCanvas.style.opacity = '1';
-
-  function drawGlitch() {
-    const w = glitchCanvas.width;
-    const h = glitchCanvas.height;
+  function draw() {
+    const w = glitchCanvas.width, h = glitchCanvas.height;
+    const p = frame / total;
     glitchCtx.clearRect(0, 0, w, h);
-
-    const progress = frame / totalFrames;
-
-    // Fill base black
-    glitchCtx.fillStyle = `rgba(5,5,5,${progress * 0.9})`;
-    glitchCtx.fillRect(0, 0, w, h);
-
-    // Glitch slices
-    const sliceCount = Math.floor(8 + progress * 20);
-    for (let i = 0; i < sliceCount; i++) {
-      const y = Math.random() * h;
-      const sliceH = Math.random() * 6 + 1;
-      const offset = (Math.random() - 0.5) * 80 * progress;
-      const alpha = Math.random() * 0.6 * (1 - progress * 0.5);
-
-      // RGB shift slices
-      glitchCtx.fillStyle = `rgba(126,184,200,${alpha})`;
-      glitchCtx.fillRect(offset, y, w * 0.4, sliceH);
-      glitchCtx.fillStyle = `rgba(200,169,126,${alpha})`;
-      glitchCtx.fillRect(w * 0.3 + offset, y + 1, w * 0.4, sliceH);
-      glitchCtx.fillStyle = `rgba(200,126,160,${alpha * 0.5})`;
-      glitchCtx.fillRect(offset * -1, y + 2, w, sliceH * 0.5);
+    glitchCtx.fillStyle = `rgba(5,5,5,${p * 0.9})`; glitchCtx.fillRect(0, 0, w, h);
+    const slices = Math.floor(8 + p * 20);
+    for (let i = 0; i < slices; i++) {
+      const y = Math.random() * h, sh = Math.random() * 6 + 1;
+      const off = (Math.random() - 0.5) * 80 * p, a = Math.random() * 0.6 * (1 - p * 0.5);
+      glitchCtx.fillStyle = `rgba(126,184,200,${a})`; glitchCtx.fillRect(off, y, w * 0.4, sh);
+      glitchCtx.fillStyle = `rgba(200,169,126,${a})`; glitchCtx.fillRect(w * 0.3 + off, y + 1, w * 0.4, sh);
     }
-
-    // Scanlines
-    if (progress > 0.3) {
-      for (let y = 0; y < h; y += 3) {
-        glitchCtx.fillStyle = `rgba(0,0,0,${0.1 * progress})`;
-        glitchCtx.fillRect(0, y, w, 1);
-      }
-    }
-
     frame++;
-    if (frame < totalFrames) {
-      requestAnimationFrame(drawGlitch);
-    } else {
-      // Navigate back
-      const target = returnSection
-        ? `index.html#${returnSection}`
-        : 'index.html';
-      window.location.href = target;
-    }
+    if (frame < total) requestAnimationFrame(draw);
+    else window.location.href = returnSection ? `index.html#${returnSection}` : 'index.html';
   }
-
-  requestAnimationFrame(drawGlitch);
+  requestAnimationFrame(draw);
 }
-
 document.getElementById('exit-btn').addEventListener('click', runGlitchExit);
 
-// ═══════════════════════════════════════════════════════
-// CURSOR
-// ═══════════════════════════════════════════════════════
+// ── Cursor ──
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursorRing');
 let mx = 0, my = 0, rx = 0, ry = 0;
-
 document.addEventListener('mousemove', e => {
   mx = e.clientX; my = e.clientY;
-  cursor.style.left = mx + 'px';
-  cursor.style.top = my + 'px';
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
 });
-
-// Hide cursor on touch devices
 const isTouchDevice = () => window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-if (isTouchDevice()) {
-  cursor.style.display = 'none';
-  ring.style.display = 'none';
-  document.body.style.cursor = 'auto';
-}
-
+if (isTouchDevice()) { cursor.style.display = 'none'; ring.style.display = 'none'; document.body.style.cursor = 'auto'; }
 function animateCursor() {
-  rx += (mx - rx) * 0.12;
-  ry += (my - ry) * 0.12;
-  ring.style.left = rx + 'px';
-  ring.style.top = ry + 'px';
+  rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
   requestAnimationFrame(animateCursor);
 }
 animateCursor();
