@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project — Saloni</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #050505;
+    --off-white: #f0ece4;
+    --warm-grey: #a09a90;
+    --accent: #c8a97e;
+    --ai-color: #7eb8c8;
+    --3d-color: #c8a97e;
+    --design-color: #a07ec8;
+    --fashion-color: #c87ea0;
+    --tint: #c8a97e; /* overridden per category by JS */
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--off-white);
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+    cursor: none;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  body.visible { opacity: 1; }
+
+  /* ── CURSOR ── */
+  .cursor {
+    position: fixed;
+    width: 8px; height: 8px;
+    background: var(--tint);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(200,169,126,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+  }
+
+  /* ── CATEGORY TINT OVERLAY ── */
+  .tint-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.03;
+  }
+
+  /* ── EXIT BUTTON ── */
+  #exit-btn {
+    position: fixed;
+    top: 2rem;
+    right: 2.5rem;
+    z-index: 1000;
+    font-family: 'Syncopate', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    color: var(--warm-grey);
+    cursor: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  #exit-btn:hover { color: var(--off-white); }
+  #exit-btn::before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 1px;
+    background: currentColor;
+    transition: width 0.3s;
+  }
+  #exit-btn:hover::before { width: 40px; }
+
+  /* ── GLITCH OVERLAY (for exit animation) ── */
+  #glitch-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9990;
+    pointer-events: none;
+    opacity: 0;
+    background: var(--black);
+  }
+  #glitch-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9991;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+
+  #hero-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6;
+  }
+
+  .hero-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(5,5,5,1) 0%,
+      rgba(5,5,5,0.5) 40%,
+      transparent 100%
+    );
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 4rem 6vw;
+    width: 100%;
+  }
+
+  .hero-category {
+    font-family: 'Syncopate', sans-serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+  }
+  body.visible .hero-category { opacity: 1; transform: translateY(0); }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1;
+    color: var(--off-white);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s;
+  }
+  body.visible .hero-title { opacity: 1; transform: translateY(0); }
+
+  .hero-meta {
+    display: flex;
+    gap: 3rem;
+    margin-top: 1.5rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s;
+  }
+  body.visible .hero-meta { opacity: 1; transform: translateY(0); }
+
+  .hero-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .meta-label {
+    font-family: 'Syncopate', sans-serif;
+    font-size: 0.45rem;
+    letter-spacing: 0.35em;
+    color: var(--warm-grey);
+    text-transform: uppercase;
+  }
+  .meta-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--off-white);
+  }
+
+  /* ── CONTENT ── */
+  .content-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 6rem 6vw;
+  }
+
+  /* Section label */
+  .section-label {
+    font-family: 'Syncopate', sans-serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--tint);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.2;
+  }
+
+  /* Description */
+  .description-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.3rem, 2.5vw, 2rem);
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--off-white);
+    max-width: 800px;
+    margin-bottom: 3rem;
+  }
+
+  /* Tools pills */
+  .tools-wrap {
+    margin-top: 2rem;
+  }
+  .tools-label {
+    font-family: 'Syncopate', sans-serif;
+    font-size: 0.5rem;
+    letter-spacing: 0.35em;
+    color: var(--warm-grey);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .tools-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .tool-pill {
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--tint);
+    border: 1px solid currentColor;
+    padding: 0.3rem 0.8rem;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+  }
+  .tool-pill:hover { opacity: 1; }
+
+  /* ── PROCESS CHART ── */
+  .process-wrap {
+    padding: 4rem 6vw 6rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .process-wrap::-webkit-scrollbar { display: none; }
+
+  .process-track {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-width: max-content;
+    padding: 2rem 0;
+  }
+
+  .process-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 260px;
+    flex-shrink: 0;
+  }
+
+  .step-media-wrap {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background: #0d0d0d;
+  }
+  .step-media-wrap.ratio-sq  { aspect-ratio: 1/1; }
+  .step-media-wrap.ratio-v   { aspect-ratio: 9/16; }
+  .step-media-wrap.ratio-h   { aspect-ratio: 16/9; }
+
+  .step-media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Placeholder for process steps */
+  .step-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: #0d0d0d;
+    border: 1px dashed rgba(255,255,255,0.08);
+  }
+  .step-placeholder span {
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.2);
+    text-transform: uppercase;
+    text-align: center;
+    padding: 0 1rem;
+  }
+
+  .step-label {
+    font-family: 'Syncopate', sans-serif;
+    font-size: 0.48rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--warm-grey);
+    text-align: center;
+  }
+
+  /* Arrow between steps */
+  .process-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 1rem;
+    flex-shrink: 0;
+    margin-bottom: 2.5rem; /* aligns with media, not label */
+  }
+  .arrow-line {
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+  }
+  .arrow-head {
+    width: 6px;
+    height: 6px;
+    border-right: 1px solid rgba(255,255,255,0.4);
+    border-top: 1px solid rgba(255,255,255,0.4);
+    transform: rotate(45deg) translateX(-3px);
+    margin-top: -1px;
+  }
+
+  /* ── FINAL OUTPUT ── */
+  .final-wrap {
+    padding: 0 6vw 8rem;
+  }
+  .final-media-wrap {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background: #0d0d0d;
+    aspect-ratio: 16/9;
+  }
+  .final-media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .final-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0d0d0d;
+    border: 1px dashed rgba(255,255,255,0.08);
+  }
+  .final-placeholder span {
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: rgba(255,255,255,0.15);
+    text-transform: uppercase;
+  }
+
+  /* ── NEXT PROJECT ── */
+  #next-project {
+    padding: 4rem 6vw;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: none;
+    transition: background 0.3s;
+  }
+  #next-project:hover { background: rgba(255,255,255,0.02); }
+  .next-label {
+    font-family: 'Syncopate', sans-serif;
+    font-size: 0.5rem;
+    letter-spacing: 0.4em;
+    color: var(--warm-grey);
+    text-transform: uppercase;
+  }
+  .next-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--off-white);
+    margin-top: 0.5rem;
+  }
+  .next-arrow {
+    font-size: 2rem;
+    color: var(--warm-grey);
+    transition: transform 0.3s, color 0.3s;
+  }
+  #next-project:hover .next-arrow {
+    transform: translateX(10px);
+    color: var(--off-white);
+  }
+
+  /* ── RESPONSIVE — MOBILE ── */
+  @media (max-width: 768px) {
+
+    /* Hide custom cursor */
+    .cursor, .cursor-ring { display: none; }
+    body { cursor: auto; }
+    #exit-btn, #next-project { cursor: pointer; }
+
+    /* Exit button — easier to tap */
+    #exit-btn {
+      top: 1.2rem;
+      right: 1.5rem;
+      font-size: 0.6rem;
+      padding: 0.6rem 0;
+    }
+
+    /* Hero */
+    #hero { height: 100svh; }
+    .hero-content { padding: 2.5rem 5vw; }
+    .hero-title { font-size: clamp(2.5rem, 11vw, 4rem); }
+    .hero-meta { flex-direction: column; gap: 1rem; margin-top: 1rem; }
+    .meta-value { font-size: 0.9rem; }
+
+    /* Content section */
+    .content-wrap { padding: 3.5rem 5vw; }
+    .description-text { font-size: clamp(1.1rem, 4.5vw, 1.5rem); margin-bottom: 2rem; }
+
+    /* Process — stays horizontal scroll (works great on mobile) */
+    .process-wrap { padding: 2rem 5vw 4rem; }
+    .process-step { width: 200px; }
+
+    /* Final output */
+    .final-wrap { padding: 0 5vw 5rem; }
+    .final-media-wrap { aspect-ratio: 9/16; } /* portrait on mobile feels better */
+
+    /* Next project */
+    #next-project { padding: 3rem 5vw; }
+    .next-title { font-size: clamp(1.3rem, 6vw, 2rem); }
+  }
+
+  @media (max-width: 400px) {
+    .hero-title { font-size: clamp(2rem, 12vw, 3rem); }
+    .process-step { width: 160px; }
+  }
+
+  /* ── YOUTUBE EMBED ── */
+  .youtube-wrap {
+    width: 100%;
+    position: relative;
+    aspect-ratio: 16/9;
+    background: #000;
+    overflow: hidden;
+  }
+  .youtube-wrap.shorts {
+    aspect-ratio: 9/16;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .youtube-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- CATEGORY TINT -->
+<div class="tint-overlay" id="tintOverlay"></div>
+
+<!-- GLITCH EXIT -->
+<div id="glitch-overlay"></div>
+<canvas id="glitch-canvas"></canvas>
+
+<!-- EXIT BUTTON -->
+<div id="exit-btn">EXIT</div>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div id="hero-media-wrap">
+    <!-- JS injects <img> or <video> here -->
+  </div>
+  <div class="hero-gradient"></div>
+  <div class="hero-content">
+    <div class="hero-category" id="hero-category"></div>
+    <h1 class="hero-title" id="hero-title"></h1>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="meta-label">Year</span>
+        <span class="meta-value" id="meta-year"></span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="meta-label">Type</span>
+        <span class="meta-value" id="meta-type"></span>
+      </div>
+      <div class="hero-meta-item" id="meta-award-wrap" style="display:none">
+        <span class="meta-label">Award</span>
+        <span class="meta-value" id="meta-award"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DESCRIPTION ── -->
+<div class="content-wrap">
+  <div class="section-label">About the project</div>
+  <p class="description-text" id="project-description">
+    <!-- filled by JS -->
+  </p>
+  <div class="tools-wrap">
+    <div class="tools-label">Tools used</div>
+    <div class="tools-list" id="tools-list"></div>
+  </div>
+</div>
+
+<!-- ── PROCESS ── -->
+<div style="padding: 0 6vw 1rem;">
+  <div class="section-label">Process</div>
+</div>
+<div class="process-wrap">
+  <div class="process-track" id="process-track">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<!-- ── FINAL OUTPUT ── -->
+<div class="final-wrap">
+  <div class="section-label" style="margin-bottom: 1.5rem;">Final Output</div>
+  <div class="final-media-wrap" id="final-media-wrap">
+    <div class="final-placeholder"><span>Add final output file here</span></div>
+  </div>
+</div>
+
+<!-- ── NEXT PROJECT ── -->
+<div id="next-project">
+  <div>
+    <div class="next-label">Next Project</div>
+    <div class="next-title" id="next-title">—</div>
+  </div>
+  <div class="next-arrow">→</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// PROJECT DATA
+// To add a new project: copy one entry and fill it in.
+// For process steps: add as many objects as you need.
+// ═══════════════════════════════════════════════════════
+const PROJECTS = {
+
+  'unwritten': {
+    title: 'Unwritten',
+    category: 'AI Film',
+    categoryKey: 'ai',
+    year: '2026',
+    type: 'Short Film',
+    award: 'Top 5 Best Film · Soulscape 2026',
+    description: 'A short AI film exploring themes of memory, identity and the stories we leave behind. Conceptualised, directed and produced entirely using AI generation tools.',
+    tools: ['Runway', 'Kling', 'Seedance', 'ElevenLabs', 'CapCut', 'After Effects'],
+    heroMedia: { type: 'image', src: 'projects/unwritten.jpg' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/CJJxKTjshgc?autoplay=1&mute=0&loop=1&playlist=CJJxKTjshgc&playsinline=1&rel=0' },
+    process: [
+      { label: 'Concept & Script', placeholder: 'Script / Storyboard', ratio: 'ratio-sq' },
+      { label: 'AI Image Generation', placeholder: 'Reference Frames', ratio: 'ratio-sq' },
+      { label: 'Video Generation', placeholder: 'Raw AI Clips', ratio: 'ratio-h' },
+      { label: 'Sound Design', placeholder: 'Audio / ElevenLabs', ratio: 'ratio-sq' },
+      { label: 'Editing & Colour', placeholder: 'Final Edit', ratio: 'ratio-h' },
+    ],
+    next: 'honeypocalypse',
+  },
+
+  'honeypocalypse': {
+    title: 'Honeypocalypse',
+    category: 'AI Film',
+    categoryKey: 'ai',
+    year: '2025',
+    type: 'Trailer',
+    award: 'Most WTF Trailer · Machine Cinema × Freepik',
+    description: 'An absurdist AI-generated trailer about the end of the world — through bees. Awarded Most WTF Trailer at Machine Cinema × Freepik.',
+    tools: ['Runway', 'Midjourney', 'After Effects', 'ElevenLabs'],
+    heroMedia: { type: 'image', src: 'projects/honeypocalypse.jpg' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/VX66QxEAzac?autoplay=1&mute=0&loop=1&playlist=VX66QxEAzac&playsinline=1&rel=0' },
+    process: [
+      { label: 'Concept', placeholder: 'Concept / Moodboard', ratio: 'ratio-sq' },
+      { label: 'Image Generation', placeholder: 'AI Images', ratio: 'ratio-sq' },
+      { label: 'Video Generation', placeholder: 'Raw Clips', ratio: 'ratio-h' },
+      { label: 'Editing', placeholder: 'Final Cut', ratio: 'ratio-h' },
+    ],
+    next: 'digital-gift',
+  },
+
+  'digital-gift': {
+    title: 'Digital Gift',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2024',
+    type: '3D Scanning · Modelling · Animation · Lookdev · Lighting',
+    description: 'A conceptual 3D piece exploring the idea of gifting in the digital age — scanning real objects and translating them into virtual keepsakes.',
+    tools: ['Blender', 'Substance Painter', 'Reality Capture', 'After Effects'],
+    heroMedia: { type: 'image', src: 'projects/digital-gift.jpg' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/7NDVmeWysZM?autoplay=1&mute=0&loop=1&playlist=7NDVmeWysZM&playsinline=1&rel=0' },
+    process: [
+      { label: '3D Scanning', placeholder: 'Raw Scan', ratio: 'ratio-sq' },
+      { label: 'Mesh Cleanup', placeholder: 'Clean Mesh', ratio: 'ratio-sq' },
+      { label: 'Texturing', placeholder: 'Textured Model', ratio: 'ratio-sq' },
+      { label: 'Lighting', placeholder: 'Lit Scene', ratio: 'ratio-sq' },
+      { label: 'Animation', placeholder: 'Animated', ratio: 'ratio-sq' },
+    ],
+    next: 'again-again-again',
+  },
+
+  'again-again-again': {
+    title: 'Again Again Again',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2024',
+    type: 'DJ Set Visualizer · Geometry Nodes',
+    description: 'A real-time reactive DJ set visualizer built entirely with Geometry Nodes in Blender. The geometry responds to music rhythm and frequency.',
+    tools: ['Blender', 'Geometry Nodes', 'After Effects'],
+    heroMedia: { type: 'image', src: 'projects/again-again-again.jpg' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/Q3M7nt_O3gc?autoplay=1&mute=0&loop=1&playlist=Q3M7nt_O3gc&playsinline=1&rel=0' },
+    process: [
+      { label: 'Reference & Concept', placeholder: 'Moodboard', ratio: 'ratio-sq' },
+      { label: 'Geometry Nodes Setup', placeholder: 'Node Graph', ratio: 'ratio-h' },
+      { label: 'Motion & Rhythm', placeholder: 'Animation Test', ratio: 'ratio-sq' },
+      { label: 'Lookdev', placeholder: 'Shading', ratio: 'ratio-sq' },
+    ],
+    next: 'her',
+  },
+
+  'her': {
+    title: 'Her',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2023',
+    type: 'Music Album Art · 3D Modelling · Lookdev · Lighting',
+    description: 'Album art created for an independent musician. A portrait rendered in 3D — soft lighting, emotional colour palette, and cinematic composition.',
+    tools: ['Blender', 'Substance Painter', 'Photoshop'],
+    heroMedia: { type: 'image', src: 'projects/her.jpg' },
+    finalMedia: { type: 'image', src: 'projects/her.jpg' },
+    process: [
+      { label: 'Brief & Reference', placeholder: 'Moodboard', ratio: 'ratio-sq' },
+      { label: 'Base Mesh', placeholder: 'Raw Model', ratio: 'ratio-sq' },
+      { label: 'Texturing', placeholder: 'Textured', ratio: 'ratio-sq' },
+      { label: 'Lighting', placeholder: 'Lit Scene', ratio: 'ratio-sq' },
+      { label: 'Final Render', placeholder: 'Final Image', ratio: 'ratio-sq' },
+    ],
+    next: 'generate',
+  },
+
+  'generate': {
+    title: 'Generate',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2023',
+    type: 'Particle System · 3D Modelling · Lookdev · Lighting',
+    description: 'An exploration of generative systems — particle simulations colliding with 3D geometry to create an organic yet mathematical visual language.',
+    tools: ['Blender', 'Geometry Nodes', 'After Effects'],
+    heroMedia: { type: 'image', src: 'projects/generate.jpg' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/XnMKcaRAyjk?autoplay=1&mute=0&loop=1&playlist=XnMKcaRAyjk&playsinline=1&rel=0' },
+    process: [
+      { label: 'Concept', placeholder: 'Sketch / Reference', ratio: 'ratio-sq' },
+      { label: 'Particle Setup', placeholder: 'Simulation', ratio: 'ratio-h' },
+      { label: 'Shading', placeholder: 'Material Tests', ratio: 'ratio-sq' },
+      { label: 'Lighting & Render', placeholder: 'Final Look', ratio: 'ratio-h' },
+    ],
+    next: 'skc-visualiser',
+  },
+
+  'skc-visualiser': {
+    title: 'SKC Visualiser',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2023',
+    type: 'Geometry Nodes · Lookdev · Lighting',
+    description: 'A music visualizer for SKC — built with Geometry Nodes for procedural animation and Blender for lookdev and final render.',
+    tools: ['Blender', 'Geometry Nodes', 'After Effects'],
+    heroMedia: { type: 'image', src: 'projects/skc-visualiser.jpg' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/HPGOP0_3n1o?autoplay=1&mute=0&loop=1&playlist=HPGOP0_3n1o&playsinline=1&rel=0' },
+    process: [
+      { label: 'Brief', placeholder: 'Music Reference', ratio: 'ratio-sq' },
+      { label: 'Geometry Build', placeholder: 'Node Setup', ratio: 'ratio-h' },
+      { label: 'Lookdev', placeholder: 'Shading', ratio: 'ratio-sq' },
+      { label: 'Final Output', placeholder: 'Render', ratio: 'ratio-h' },
+    ],
+    next: 'zablien',
+  },
+
+  'zablien': {
+    title: 'Zablien',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2023',
+    type: '3D Modelling',
+    description: 'A conceptual character model — an alien-like creature built from scratch in Blender, exploring form, anatomy and surface detail.',
+    tools: ['Blender', 'ZBrush', 'Substance Painter'],
+    heroMedia: { type: 'image', src: 'projects/zablien.jpg' },
+    finalMedia: { type: 'youtube', src: 'https://www.youtube.com/embed/UX0iIUSXqNw?autoplay=1&mute=0&loop=1&playlist=UX0iIUSXqNw&playsinline=1&rel=0' },
+    process: [
+      { label: 'Concept Sketch', placeholder: 'Sketch', ratio: 'ratio-sq' },
+      { label: 'Base Mesh', placeholder: 'Blockout', ratio: 'ratio-sq' },
+      { label: 'Sculpt Detail', placeholder: 'High Poly', ratio: 'ratio-sq' },
+      { label: 'Texturing', placeholder: 'Textured', ratio: 'ratio-sq' },
+    ],
+    next: 'cube-ar',
+  },
+
+  'cube-ar': {
+    title: 'Cube',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2022',
+    type: 'Print + AR Experience',
+    description: 'A physical print that comes alive through AR — scan the artwork and watch the 3D world emerge from the page.',
+    tools: ['Blender', 'Adobe Aero', 'Illustrator'],
+    heroMedia: { type: 'video', src: 'projects/cube-ar.mp4' },
+    finalMedia: { type: 'video', src: 'projects/cube-ar.mp4' },
+    process: [
+      { label: 'Print Design', placeholder: 'Illustration', ratio: 'ratio-sq' },
+      { label: '3D Asset Build', placeholder: '3D Model', ratio: 'ratio-sq' },
+      { label: 'AR Trigger Setup', placeholder: 'AR Marker', ratio: 'ratio-sq' },
+      { label: 'AR Experience', placeholder: 'Final AR', ratio: 'ratio-sq' },
+    ],
+    next: 'frontiminati',
+  },
+
+  'frontiminati': {
+    title: 'Frontiminati',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2022',
+    type: 'Painting + AR Experience',
+    description: 'A hand-painted canvas that activates an AR layer — merging traditional painting with augmented reality to create a living artwork.',
+    tools: ['Blender', 'Adobe Aero', 'Procreate'],
+    heroMedia: { type: 'video', src: 'projects/frontiminati.mp4' },
+    finalMedia: { type: 'video', src: 'projects/frontiminati.mp4' },
+    process: [
+      { label: 'Painting', placeholder: 'Original Artwork', ratio: 'ratio-sq' },
+      { label: '3D Layer', placeholder: '3D Asset', ratio: 'ratio-sq' },
+      { label: 'AR Integration', placeholder: 'AR Build', ratio: 'ratio-sq' },
+    ],
+    next: 'cryptominati',
+  },
+
+  'cryptominati': {
+    title: 'Cryptominati',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2022',
+    type: 'NFT · Sold',
+    description: 'An original NFT character collection — conceptualised, modelled and sold independently. A commentary on crypto culture through character design.',
+    tools: ['Blender', 'Substance Painter', 'Photoshop'],
+    heroMedia: { type: 'video', src: 'projects/cryptominati.mp4' },
+    finalMedia: { type: 'video', src: 'projects/cryptominati.mp4' },
+    process: [
+      { label: 'Concept', placeholder: 'Sketch', ratio: 'ratio-sq' },
+      { label: 'Modelling', placeholder: 'Base Model', ratio: 'ratio-sq' },
+      { label: 'Texturing', placeholder: 'Textured', ratio: 'ratio-sq' },
+      { label: 'Final Render', placeholder: 'NFT Ready', ratio: 'ratio-sq' },
+    ],
+    next: 'no-nazar',
+  },
+
+  'no-nazar': {
+    title: 'No Nazar',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2022',
+    type: 'NFT · Sold',
+    description: 'A culturally rooted NFT piece — drawing from the evil eye symbol and reinterpreting it through a 3D digital lens.',
+    tools: ['Blender', 'Substance Painter'],
+    heroMedia: { type: 'video', src: 'projects/no-nazar.mp4' },
+    finalMedia: { type: 'video', src: 'projects/no-nazar.mp4' },
+    process: [
+      { label: 'Research', placeholder: 'Reference Images', ratio: 'ratio-sq' },
+      { label: 'Modelling', placeholder: 'Model', ratio: 'ratio-sq' },
+      { label: 'Lookdev', placeholder: 'Shading', ratio: 'ratio-sq' },
+    ],
+    next: 'iamaisha',
+  },
+
+  'iamaisha': {
+    title: 'IAMAISHA',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2022',
+    type: 'Concept · 3D Modelling',
+    description: 'A conceptual 3D character — IAMAISHA is an identity exploration piece, building a digital persona from scratch.',
+    tools: ['Blender', 'Substance Painter', 'ZBrush'],
+    heroMedia: { type: 'video', src: 'projects/iamaisha.mp4' },
+    finalMedia: { type: 'video', src: 'projects/iamaisha.mp4' },
+    process: [
+      { label: 'Concept', placeholder: 'Sketch', ratio: 'ratio-sq' },
+      { label: 'Modelling', placeholder: 'Model', ratio: 'ratio-sq' },
+      { label: 'Texturing', placeholder: 'Textured', ratio: 'ratio-sq' },
+    ],
+    next: 'pedro-amos',
+  },
+
+  'pedro-amos': {
+    title: 'Pedro Amos',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2022',
+    type: 'Concept · 3D Modelling',
+    description: 'A character study built around a fictional persona — exploring personality through form, texture and posture.',
+    tools: ['Blender', 'Substance Painter'],
+    heroMedia: { type: 'video', src: 'projects/pedro-amos.mp4' },
+    finalMedia: { type: 'video', src: 'projects/pedro-amos.mp4' },
+    process: [
+      { label: 'Concept', placeholder: 'Reference', ratio: 'ratio-sq' },
+      { label: 'Modelling', placeholder: 'Model', ratio: 'ratio-sq' },
+      { label: 'Final', placeholder: 'Render', ratio: 'ratio-sq' },
+    ],
+    next: 'larva-lads',
+  },
+
+  'larva-lads': {
+    title: 'Larva Lads',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2022',
+    type: 'Concept · 3D Modelling',
+    description: 'A collection of absurdist 3D characters — larva-inspired creatures with distinct personalities, built as a conceptual NFT series.',
+    tools: ['Blender', 'Substance Painter'],
+    heroMedia: { type: 'video', src: 'projects/larva-lads.mp4' },
+    finalMedia: { type: 'video', src: 'projects/larva-lads.mp4' },
+    process: [
+      { label: 'Concept', placeholder: 'Sketches', ratio: 'ratio-sq' },
+      { label: 'Modelling', placeholder: 'Characters', ratio: 'ratio-sq' },
+      { label: 'Final', placeholder: 'Renders', ratio: 'ratio-sq' },
+    ],
+    next: 'fleurz',
+  },
+
+  'fleurz': {
+    title: 'Fleurz',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2022',
+    type: '3D Print · RTFKT Creator Challenge',
+    description: 'An entry for the RTFKT Creator Challenge — a floral 3D printed wearable object designed for the boundary between digital and physical fashion.',
+    tools: ['Blender', 'Chitubox', '3D Printer'],
+    heroMedia: { type: 'video', src: 'projects/fleurz.mp4' },
+    finalMedia: { type: 'video', src: 'projects/fleurz.mp4' },
+    process: [
+      { label: 'Design Brief', placeholder: 'Concept', ratio: 'ratio-sq' },
+      { label: '3D Model', placeholder: 'Digital Model', ratio: 'ratio-sq' },
+      { label: 'Print Prep', placeholder: 'Sliced File', ratio: 'ratio-sq' },
+      { label: 'Printed Object', placeholder: 'Physical Print', ratio: 'ratio-sq' },
+    ],
+    next: 'mixt',
+  },
+
+  'mixt': {
+    title: 'MIXT Salad Bowl',
+    category: '3D & Animation',
+    categoryKey: '3d',
+    year: '2022',
+    type: '3D Print',
+    description: 'A functional 3D printed salad bowl — exploring how everyday objects can be reimagined through digital fabrication.',
+    tools: ['Blender', 'Chitubox', '3D Printer'],
+    heroMedia: { type: 'image', src: 'projects/mixt.jpg' },
+    finalMedia: { type: 'image', src: 'projects/mixt.jpg' },
+    process: [
+      { label: 'Form Exploration', placeholder: 'Sketches', ratio: 'ratio-sq' },
+      { label: '3D Model', placeholder: 'Digital Model', ratio: 'ratio-sq' },
+      { label: 'Print', placeholder: 'Physical Output', ratio: 'ratio-sq' },
+    ],
+    next: 'mueshi-logo',
+  },
+
+  'mueshi-logo': {
+    title: 'Mueshi',
+    category: 'Graphic Design & Marketing',
+    categoryKey: 'design',
+    year: '2023',
+    type: 'Logo Design',
+    description: 'Brand identity and logo design for Mueshi — a clean, contemporary mark built around the brand\'s core values.',
+    tools: ['Illustrator', 'Photoshop'],
+    heroMedia: { type: 'image', src: 'projects/mueshi-logo.jpg' },
+    finalMedia: { type: 'image', src: 'projects/mueshi-logo.jpg' },
+    process: [
+      { label: 'Brief', placeholder: 'Brand Brief', ratio: 'ratio-sq' },
+      { label: 'Sketches', placeholder: 'Logo Sketches', ratio: 'ratio-sq' },
+      { label: 'Digital Draft', placeholder: 'Vector Draft', ratio: 'ratio-sq' },
+      { label: 'Final Mark', placeholder: 'Final Logo', ratio: 'ratio-sq' },
+    ],
+    next: 'twitch-book',
+  },
+
+  'twitch-book': {
+    title: 'Twitch Book',
+    category: 'Graphic Design & Marketing',
+    categoryKey: 'design',
+    year: '2022',
+    type: 'Print Media',
+    description: 'A print publication exploring the Twitch thesis collection — documentation through editorial design and photography.',
+    tools: ['InDesign', 'Photoshop', 'Illustrator'],
+    heroMedia: { type: 'image', src: 'projects/twitch-book.jpg' },
+    finalMedia: { type: 'image', src: 'projects/twitch-book.jpg' },
+    process: [
+      { label: 'Content Structure', placeholder: 'Outline', ratio: 'ratio-sq' },
+      { label: 'Layout Design', placeholder: 'Grid Layout', ratio: 'ratio-h' },
+      { label: 'Typography', placeholder: 'Type Choices', ratio: 'ratio-sq' },
+      { label: 'Print Ready', placeholder: 'Final Pages', ratio: 'ratio-h' },
+    ],
+    next: 'prince-hyundai',
+  },
+
+  'prince-hyundai': {
+    title: 'Prince Hyundai',
+    category: 'Graphic Design & Marketing',
+    categoryKey: 'design',
+    year: '2022',
+    type: 'Print · Pamphlets',
+    description: 'Marketing pamphlet design for Prince Hyundai — clean automotive branding translated into print collateral.',
+    tools: ['InDesign', 'Illustrator', 'Photoshop'],
+    heroMedia: { type: 'image', src: 'projects/prince-hyundai.jpg' },
+    finalMedia: { type: 'image', src: 'projects/prince-hyundai.jpg' },
+    process: [
+      { label: 'Brief', placeholder: 'Brand Guidelines', ratio: 'ratio-sq' },
+      { label: 'Layout', placeholder: 'Grid', ratio: 'ratio-h' },
+      { label: 'Final', placeholder: 'Print Ready', ratio: 'ratio-h' },
+    ],
+    next: 'uxmagic',
+  },
+
+  'uxmagic': {
+    title: 'UXMagic.ai',
+    category: 'Graphic Design & Marketing',
+    categoryKey: 'design',
+    year: '2024',
+    type: 'Growth & Marketing · AI Product',
+    description: 'Growth strategy and marketing execution for UXMagic.ai — building brand presence and user acquisition for an early-stage AI product.',
+    tools: ['Figma', 'Notion', 'Canva', 'Meta Ads'],
+    heroMedia: { type: 'image', src: 'projects/uxmagic.jpg' },
+    finalMedia: { type: 'image', src: 'projects/uxmagic.jpg' },
+    process: [
+      { label: 'Strategy', placeholder: 'Marketing Plan', ratio: 'ratio-h' },
+      { label: 'Content Creation', placeholder: 'Assets', ratio: 'ratio-sq' },
+      { label: 'Campaign', placeholder: 'Live Campaign', ratio: 'ratio-h' },
+    ],
+    next: 'tsdc',
+  },
+
+  'tsdc': {
+    title: 'TSDC',
+    category: 'Graphic Design & Marketing',
+    categoryKey: 'design',
+    year: '2023',
+    type: 'Instagram Animation · Figma',
+    description: 'An animated Instagram post for TSDC\'s IRL pop-up event — designed in Figma and animated for social media.',
+    tools: ['Figma', 'After Effects'],
+    heroMedia: { type: 'video', src: 'projects/tsdc.mp4' },
+    finalMedia: { type: 'video', src: 'projects/tsdc.mp4' },
+    process: [
+      { label: 'Brief', placeholder: 'Event Brief', ratio: 'ratio-sq' },
+      { label: 'Design', placeholder: 'Figma Frame', ratio: 'ratio-sq' },
+      { label: 'Animation', placeholder: 'Motion', ratio: 'ratio-sq' },
+    ],
+    next: 'twitch-fashion',
+  },
+
+  'twitch-fashion': {
+    title: 'Twitch',
+    category: 'Fashion',
+    categoryKey: 'fashion',
+    year: '2021',
+    type: 'Thesis Collection',
+    description: 'Final thesis collection — Twitch explores the involuntary movements of the body and translates them into garment construction and draping.',
+    tools: ['Draping', 'Pattern Cutting', 'Sewing', 'Photoshop'],
+    heroMedia: { type: 'image', src: 'projects/twitch-fashion.jpg' },
+    finalMedia: { type: 'image', src: 'projects/twitch-fashion.jpg' },
+    process: [
+      { label: 'Research', placeholder: 'Research Board', ratio: 'ratio-sq' },
+      { label: 'Concept', placeholder: 'Concept Sketches', ratio: 'ratio-v' },
+      { label: 'Toile', placeholder: 'Toile / Mock-up', ratio: 'ratio-v' },
+      { label: 'Construction', placeholder: 'In Progress', ratio: 'ratio-v' },
+      { label: 'Final Look', placeholder: 'Styled Shoot', ratio: 'ratio-v' },
+    ],
+    next: 'sisozo',
+  },
+
+  'sisozo': {
+    title: 'Sisozo',
+    category: 'Fashion',
+    categoryKey: 'fashion',
+    year: '2021',
+    type: 'Concept · Branding',
+    description: 'A fashion brand concept built from the ground up — Sisozo explores identity and belonging through garment and visual identity.',
+    tools: ['Illustrator', 'Photoshop', 'InDesign'],
+    heroMedia: { type: 'image', src: 'projects/sisozo.jpg' },
+    finalMedia: { type: 'image', src: 'projects/sisozo.jpg' },
+    process: [
+      { label: 'Brand Research', placeholder: 'Moodboard', ratio: 'ratio-sq' },
+      { label: 'Identity Design', placeholder: 'Logo & Palette', ratio: 'ratio-sq' },
+      { label: 'Collection Concept', placeholder: 'Sketches', ratio: 'ratio-v' },
+    ],
+    next: 'chaos',
+  },
+
+  'chaos': {
+    title: 'Chaos',
+    category: 'Fashion',
+    categoryKey: 'fashion',
+    year: '2020',
+    type: 'Concept · Future Building',
+    description: 'What will the future look like? Chaos is a speculative fashion concept exploring disorder as an aesthetic and political statement.',
+    tools: ['Photoshop', 'InDesign', 'Physical Materials'],
+    heroMedia: { type: 'image', src: 'projects/chaos.jpg' },
+    finalMedia: { type: 'image', src: 'projects/chaos.jpg' },
+    process: [
+      { label: 'Research', placeholder: 'References', ratio: 'ratio-sq' },
+      { label: 'Concept Development', placeholder: 'Concept Board', ratio: 'ratio-h' },
+      { label: 'Visuals', placeholder: 'Final Board', ratio: 'ratio-h' },
+    ],
+    next: 'drama',
+  },
+
+  'drama': {
+    title: 'Drama',
+    category: 'Fashion',
+    categoryKey: 'fashion',
+    year: '2020',
+    type: 'Concept · Creative Direction',
+    description: 'A creative direction project — Drama explores theatrical dressing and the performance of identity through fashion.',
+    tools: ['Photoshop', 'InDesign', 'Photography'],
+    heroMedia: { type: 'image', src: 'projects/drama.jpg' },
+    finalMedia: { type: 'image', src: 'projects/drama.jpg' },
+    process: [
+      { label: 'Concept', placeholder: 'Moodboard', ratio: 'ratio-sq' },
+      { label: 'Direction', placeholder: 'Shot List', ratio: 'ratio-sq' },
+      { label: 'Final Edit', placeholder: 'Final Images', ratio: 'ratio-v' },
+    ],
+    next: 'layering',
+  },
+
+  'layering': {
+    title: 'Layering',
+    category: 'Fashion',
+    categoryKey: 'fashion',
+    year: '2020',
+    type: 'Draping',
+    description: 'A draping study exploring how layers interact with the body — volume, weight and movement examined through direct fabric manipulation.',
+    tools: ['Draping', 'Muslin', 'Pattern Cutting'],
+    heroMedia: { type: 'image', src: 'projects/layering.jpg' },
+    finalMedia: { type: 'image', src: 'projects/layering.jpg' },
+    process: [
+      { label: 'Fabric Study', placeholder: 'Fabric Tests', ratio: 'ratio-sq' },
+      { label: 'Draping', placeholder: 'On Stand', ratio: 'ratio-v' },
+      { label: 'Final', placeholder: 'Final Drape', ratio: 'ratio-v' },
+    ],
+    next: 'clumsy',
+  },
+
+  'clumsy': {
+    title: 'Clumsy',
+    category: 'Fashion',
+    categoryKey: 'fashion',
+    year: '2020',
+    type: 'Discovery Through Form',
+    description: 'A form discovery project — Clumsy embraces mistakes and accidents as a design methodology, letting the process guide the outcome.',
+    tools: ['Draping', 'Mixed Materials', 'Photography'],
+    heroMedia: { type: 'image', src: 'projects/clumsy.jpg' },
+    finalMedia: { type: 'image', src: 'projects/clumsy.jpg' },
+    process: [
+      { label: 'Experiments', placeholder: 'Material Tests', ratio: 'ratio-sq' },
+      { label: 'Form Building', placeholder: 'Process Shots', ratio: 'ratio-sq' },
+      { label: 'Final', placeholder: 'Final Form', ratio: 'ratio-sq' },
+    ],
+    next: 'unwritten',
+  },
+
+};
+
+// ═══════════════════════════════════════════════════════
+// CATEGORY CONFIG
+// ═══════════════════════════════════════════════════════
+const CATEGORY_CONFIG = {
+  ai:      { color: '#7eb8c8', tintBg: 'radial-gradient(ellipse at top left, rgba(126,184,200,0.08) 0%, transparent 60%)' },
+  '3d':    { color: '#c8a97e', tintBg: 'radial-gradient(ellipse at top left, rgba(200,169,126,0.08) 0%, transparent 60%)' },
+  design:  { color: '#a07ec8', tintBg: 'radial-gradient(ellipse at top left, rgba(160,126,200,0.08) 0%, transparent 60%)' },
+  fashion: { color: '#c87ea0', tintBg: 'radial-gradient(ellipse at top left, rgba(200,126,160,0.08) 0%, transparent 60%)' },
+};
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+const params = new URLSearchParams(window.location.search);
+const projectId = params.get('p') || 'unwritten';
+const returnSection = params.get('from') || '';
+const project = PROJECTS[projectId];
+
+if (!project) {
+  window.location.href = 'index.html';
+}
+
+const cat = CATEGORY_CONFIG[project.categoryKey];
+
+// Apply category tint
+document.documentElement.style.setProperty('--tint', cat.color);
+document.getElementById('tintOverlay').style.background = cat.tintBg;
+
+// Page title
+document.title = `${project.title} — Saloni`;
+
+// Hero
+document.getElementById('hero-category').textContent = project.category;
+document.getElementById('hero-category').style.color = cat.color;
+document.getElementById('hero-title').textContent = project.title;
+document.getElementById('meta-year').textContent = project.year;
+document.getElementById('meta-type').textContent = project.type;
+
+if (project.award) {
+  document.getElementById('meta-award-wrap').style.display = 'flex';
+  document.getElementById('meta-award').textContent = project.award;
+}
+
+// Hero media
+const heroWrap = document.getElementById('hero-media-wrap');
+heroWrap.style.cssText = 'position:absolute;inset:0;';
+if (project.heroMedia.type === 'video') {
+  heroWrap.innerHTML = `<video id="hero-media" src="${project.heroMedia.src}" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.55;"></video>`;
+  // Try to play with audio — works on mobile because the user just tapped a card (valid gesture)
+  const heroVid = heroWrap.querySelector('video');
+  if (heroVid) {
+    heroVid.muted = false;
+    heroVid.volume = 0.85;
+    heroVid.play().catch(() => {
+      // Browser blocked unmuted — fall back silently to muted
+      heroVid.muted = true;
+      heroVid.play().catch(() => {});
+    });
+  }
+} else {
+  heroWrap.innerHTML = `<img id="hero-media" src="${project.heroMedia.src}" alt="${project.title}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.55;">`;
+}
+
+// Description
+document.getElementById('project-description').textContent = project.description;
+
+// Tools
+const toolsList = document.getElementById('tools-list');
+project.tools.forEach(tool => {
+  const pill = document.createElement('div');
+  pill.className = 'tool-pill';
+  pill.textContent = tool;
+  toolsList.appendChild(pill);
+});
+
+// Process chart
+const track = document.getElementById('process-track');
+project.process.forEach((step, i) => {
+  // Step
+  const stepEl = document.createElement('div');
+  stepEl.className = 'process-step';
+  stepEl.innerHTML = `
+    <div class="step-media-wrap ${step.ratio}">
+      <div class="step-placeholder">
+        <span>${step.placeholder}</span>
+        <span style="opacity:0.4;font-size:0.45rem;">add file to projects/process/${projectId}-${i+1}.jpg</span>
+      </div>
+    </div>
+    <div class="step-label">${step.label}</div>
+  `;
+  track.appendChild(stepEl);
+
+  // Arrow (not after last step)
+  if (i < project.process.length - 1) {
+    const arrow = document.createElement('div');
+    arrow.className = 'process-arrow';
+    arrow.innerHTML = `<div class="arrow-line"></div><div class="arrow-head"></div>`;
+    track.appendChild(arrow);
+  }
+});
+
+// Final media
+const finalWrap = document.getElementById('final-media-wrap');
+if (project.finalMedia.type === 'youtube') {
+  const isShorts = project.finalMedia.src.includes('shorts') ||
+    (() => { try { const u = new URL(project.finalMedia.src); const p = u.searchParams.get('playlist'); return false; } catch(e){ return false; } })();
+  // Detect shorts by aspect ratio hint in src
+  const shortsMode = project.finalMedia.src.includes('shorts') ||
+    (project.finalMedia.src.match(/embed\/([A-Za-z0-9_-]+)/) &&
+     ['7NDVmeWysZM','HPGOP0_3n1o'].includes(project.finalMedia.src.match(/embed\/([A-Za-z0-9_-]+)/)[1]));
+  finalWrap.style.aspectRatio = shortsMode ? '9/16' : '16/9';
+  if (shortsMode) { finalWrap.style.maxWidth = '420px'; finalWrap.style.margin = '0 auto'; }
+  finalWrap.innerHTML = `<iframe src="${project.finalMedia.src}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+} else if (project.finalMedia.type === 'video') {
+  finalWrap.innerHTML = `<video class="final-media" src="${project.finalMedia.src}" autoplay muted loop playsinline></video>`;
+  const finalVid = finalWrap.querySelector('video');
+  if (finalVid) {
+    finalVid.muted = false; finalVid.volume = 0.85;
+    finalVid.play().catch(() => { finalVid.muted = true; finalVid.play().catch(() => {}); });
+  }
+} else {
+  finalWrap.innerHTML = `<img class="final-media" src="${project.finalMedia.src}" alt="${project.title} final">`;
+}
+
+// Next project
+const nextId = project.next;
+const nextProject = PROJECTS[nextId];
+if (nextProject) {
+  document.getElementById('next-title').textContent = nextProject.title;
+  document.getElementById('next-project').addEventListener('click', () => {
+    window.location.href = `project.html?p=${nextId}`;
+  });
+}
+
+// ── Fade in ──
+requestAnimationFrame(() => {
+  setTimeout(() => document.body.classList.add('visible'), 50);
+});
+
+// ═══════════════════════════════════════════════════════
+// GLITCH EXIT ANIMATION
+// ═══════════════════════════════════════════════════════
+const glitchOverlay = document.getElementById('glitch-overlay');
+const glitchCanvas = document.getElementById('glitch-canvas');
+const glitchCtx = glitchCanvas.getContext('2d');
+
+function resizeCanvas() {
+  glitchCanvas.width = window.innerWidth;
+  glitchCanvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function runGlitchExit() {
+  let frame = 0;
+  const totalFrames = 40;
+  glitchCanvas.style.opacity = '1';
+
+  function drawGlitch() {
+    const w = glitchCanvas.width;
+    const h = glitchCanvas.height;
+    glitchCtx.clearRect(0, 0, w, h);
+
+    const progress = frame / totalFrames;
+
+    // Fill base black
+    glitchCtx.fillStyle = `rgba(5,5,5,${progress * 0.9})`;
+    glitchCtx.fillRect(0, 0, w, h);
+
+    // Glitch slices
+    const sliceCount = Math.floor(8 + progress * 20);
+    for (let i = 0; i < sliceCount; i++) {
+      const y = Math.random() * h;
+      const sliceH = Math.random() * 6 + 1;
+      const offset = (Math.random() - 0.5) * 80 * progress;
+      const alpha = Math.random() * 0.6 * (1 - progress * 0.5);
+
+      // RGB shift slices
+      glitchCtx.fillStyle = `rgba(126,184,200,${alpha})`;
+      glitchCtx.fillRect(offset, y, w * 0.4, sliceH);
+      glitchCtx.fillStyle = `rgba(200,169,126,${alpha})`;
+      glitchCtx.fillRect(w * 0.3 + offset, y + 1, w * 0.4, sliceH);
+      glitchCtx.fillStyle = `rgba(200,126,160,${alpha * 0.5})`;
+      glitchCtx.fillRect(offset * -1, y + 2, w, sliceH * 0.5);
+    }
+
+    // Scanlines
+    if (progress > 0.3) {
+      for (let y = 0; y < h; y += 3) {
+        glitchCtx.fillStyle = `rgba(0,0,0,${0.1 * progress})`;
+        glitchCtx.fillRect(0, y, w, 1);
+      }
+    }
+
+    frame++;
+    if (frame < totalFrames) {
+      requestAnimationFrame(drawGlitch);
+    } else {
+      // Navigate back
+      const target = returnSection
+        ? `index.html#${returnSection}`
+        : 'index.html';
+      window.location.href = target;
+    }
+  }
+
+  requestAnimationFrame(drawGlitch);
+}
+
+document.getElementById('exit-btn').addEventListener('click', runGlitchExit);
+
+// ═══════════════════════════════════════════════════════
+// CURSOR
+// ═══════════════════════════════════════════════════════
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+});
+
+// Hide cursor on touch devices
+const isTouchDevice = () => window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+if (isTouchDevice()) {
+  cursor.style.display = 'none';
+  ring.style.display = 'none';
+  document.body.style.cursor = 'auto';
+}
+
+function animateCursor() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+</script>
+</body>
+</html>
