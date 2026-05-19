@@ -55,7 +55,7 @@
   /* ── INTRO / ANIMATION SECTION ── */
   #intro {
     position: relative;
-    height: 300vh; /* scroll space for 29 frames */
+    height: 300vh; /* scroll space for 57 frames */
   }
 
   #sticky-scene {
@@ -620,7 +620,6 @@
 
 <!-- LOADING SCREEN -->
 <div id="loader">
-  <div class="loader-name">SALONI</div>
   <div class="loader-bar-wrap"><div class="loader-bar" id="loaderBar"></div></div>
   <div class="loader-count" id="loaderCount">0 / 29</div>
 </div>
@@ -633,7 +632,7 @@
     <!-- The brain frames render here — animation is fully baked into the PNG sequence -->
     <canvas id="brain-canvas"></canvas>
 
-    <!-- Welcome text emerges at frame 22 -->
+    <!-- Welcome text emerges at frame 47 -->
     <div id="welcome-text">
       <span>Welcome to Saloni's Brainchild</span>
       <span class="sub">Conceptual 3D & AI Artist</span>
@@ -699,8 +698,8 @@
     <div class="cat-line"></div>
     <span class="cat-num">01</span>
   </div>
-  <div class="project-grid grid-ai">
-    <div class="project-card ratio-horizontal row-span-2" data-project="unwritten">
+  <div class="project-grid grid-2col">
+    <div class="project-card ratio-horizontal" data-project="unwritten">
       <div class="card-placeholder" style="background: linear-gradient(135deg, #060e16 0%, #0d1f2d 100%);"></div>
       <img class="card-media" src="projects/unwritten.jpg" alt="unwritten" loading="lazy">
       <div class="card-award">Top 5 Best Film · Soulscape 2026</div>
@@ -713,12 +712,6 @@
       <div class="card-award">Most WTF Trailer · Machine Cinema × Freepik</div>
       <div class="card-overlay"></div>
       <div class="card-title-center"><div class="title-main">Honeypocalypse</div><div class="title-sub">Trailer · AI</div></div>
-    </div>
-    <div class="project-card ratio-vertical" data-project="unwritten">
-      <div class="card-placeholder" style="background: linear-gradient(160deg, #060d15 0%, #0a1825 100%);"></div>
-      <img class="card-media" src="projects/unwritten.jpg" alt="unwritten" loading="lazy">
-      <div class="card-overlay"></div>
-      <div class="card-title-center"><div class="title-main">Unwritten</div><div class="title-sub">Trailer · AI</div></div>
     </div>
   </div>
 
@@ -777,15 +770,15 @@
     <span class="subcat-label" style="color: var(--3d-color);">Augmented Reality</span>
   </div>
   <div class="project-grid grid-2col">
-    <div class="project-card ratio-vertical" data-video="projects/cube-ar.mp4" data-project="cube-ar">
+    <div class="project-card ratio-vertical" data-project="cube-ar">
       <div class="card-placeholder" style="background: linear-gradient(160deg, #050a10 0%, #0a1525 100%);"></div>
-      <video class="card-media" src="projects/cube-ar.mov" muted loop playsinline preload="metadata"></video>
+      <img class="card-media" src="projects/cube-ar.png" alt="cube-ar" loading="lazy">
       <div class="card-overlay"></div>
       <div class="card-title-center"><div class="title-main">Cube</div><div class="title-sub">Print + AR Experience</div></div>
     </div>
-    <div class="project-card ratio-vertical" data-video="projects/frontiminati.mp4" data-project="frontiminati">
+    <div class="project-card ratio-vertical" data-project="frontiminati">
       <div class="card-placeholder" style="background: linear-gradient(160deg, #0a0500 0%, #150a00 100%);"></div>
-      <video class="card-media" src="projects/frontiminati.mov" muted loop playsinline preload="metadata"></video>
+      <img class="card-media" src="projects/frontiminati.png" alt="frontiminati" loading="lazy">
       <div class="card-overlay"></div>
       <div class="card-title-center"><div class="title-main">Frontiminati</div><div class="title-sub">Painting + AR Experience</div></div>
     </div>
@@ -795,15 +788,15 @@
     <span class="subcat-label" style="color: var(--3d-color);">NFTs</span>
   </div>
   <div class="project-grid grid-mixed">
-    <div class="project-card ratio-horizontal col-span-2" data-video="projects/cryptominati.mp4" data-project="cryptominati">
+    <div class="project-card ratio-horizontal col-span-2" data-project="cryptominati">
       <div class="card-placeholder" style="background: linear-gradient(135deg, #0a0800 0%, #151200 100%);"></div>
-      <video class="card-media" src="projects/cryptominati.mp4" muted loop playsinline preload="metadata"></video>
+      <img class="card-media" src="projects/cryptominati.png" alt="cryptominati" loading="lazy">
       <div class="card-overlay"></div>
       <div class="card-title-center"><div class="title-main">Cryptominati</div><div class="title-sub">NFT Sold</div></div>
     </div>
-    <div class="project-card ratio-square" data-video="projects/no-nazar.mp4" data-project="no-nazar">
+    <div class="project-card ratio-square" data-project="no-nazar">
       <div class="card-placeholder" style="background: linear-gradient(160deg, #080010 0%, #100020 100%);"></div>
-      <video class="card-media" src="projects/no-nazar.mp4" muted loop playsinline preload="metadata"></video>
+      <img class="card-media" src="projects/no-nazar.png" alt="no-nazar" loading="lazy">
       <div class="card-overlay"></div>
       <div class="card-title-center"><div class="title-main">No Nazar</div><div class="title-sub">NFT Sold</div></div>
     </div>
@@ -815,15 +808,15 @@
       <div class="card-overlay"></div>
       <div class="card-title-center"><div class="title-main">IAMAISHA</div><div class="title-sub">Concept · 3D Modelling</div></div>
     </div>
-    <div class="project-card ratio-square" data-video="projects/pedro-amos.mp4" data-project="pedro-amos">
+    <div class="project-card ratio-square" data-project="pedro-amos">
       <div class="card-placeholder" style="background: linear-gradient(160deg, #000a08 0%, #001510 100%);"></div>
-      <video class="card-media" src="projects/pedro-amos.mp4" muted loop playsinline preload="metadata"></video>
+      <img class="card-media" src="projects/pedro-amos.png" alt="pedro-amos" loading="lazy">
       <div class="card-overlay"></div>
       <div class="card-title-center"><div class="title-main">Pedro Amos</div><div class="title-sub">Concept · 3D Modelling</div></div>
     </div>
-    <div class="project-card ratio-square" data-video="projects/larva-lads.mp4" data-project="larva-lads">
+    <div class="project-card ratio-square" data-project="larva-lads">
       <div class="card-placeholder" style="background: linear-gradient(160deg, #080a00 0%, #121500 100%);"></div>
-      <video class="card-media" src="projects/larva-lads.mp4" muted loop playsinline preload="metadata"></video>
+      <img class="card-media" src="projects/larva-lads.png" alt="larva-lads" loading="lazy">
       <div class="card-overlay"></div>
       <div class="card-title-center"><div class="title-main">Larva Lads</div><div class="title-sub">Concept · 3D Modelling</div></div>
     </div>
@@ -833,9 +826,9 @@
     <span class="subcat-label" style="color: var(--3d-color);">3D Printing</span>
   </div>
   <div class="project-grid grid-2col">
-    <div class="project-card ratio-vertical" data-video="projects/fleurz.mp4" data-project="fleurz">
+    <div class="project-card ratio-vertical" data-project="fleurz">
       <div class="card-placeholder" style="background: linear-gradient(160deg, #0a0000 0%, #180500 100%);"></div>
-      <video class="card-media" src="projects/fleurz.MOV" muted loop playsinline preload="metadata"></video>
+      <img class="card-media" src="projects/fleurz.png" alt="fleurz" loading="lazy">
       <div class="card-overlay"></div>
       <div class="card-title-center"><div class="title-main">Fleurz</div><div class="title-sub">RTFKT Creator Challenge</div></div>
     </div>
@@ -851,14 +844,14 @@
     <span class="subcat-label" style="color: var(--3d-color);">Academic Work</span>
   </div>
   <div class="project-grid grid-4col">
-    <div class="project-card ratio-horizontal" data-video="projects/mosquitrone.mp4" data-project="mosquitrone"><div class="card-placeholder" style="background:#050810;"></div><video class="card-media" src="projects/mosquitrone.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Mosquitrone</div><div class="title-sub">3D Modelling</div></div></div>
+    <div class="project-card ratio-horizontal" data-project="mosquitrone"><div class="card-placeholder" style="background:#050810;"></div><img class="card-media" src="projects/mosquitrone.png" alt="mosquitrone" loading="lazy"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Mosquitrone</div><div class="title-sub">3D Modelling</div></div></div>
     <div class="project-card ratio-horizontal" data-video="projects/the-escape.mp4" data-project="the-escape"><div class="card-placeholder" style="background:#080a05;"></div><video class="card-media" src="projects/the-escape.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">The Escape</div><div class="title-sub">Look Dev · Lighting</div></div></div>
     <div class="project-card ratio-horizontal" data-video="projects/boot.mp4" data-project="boot"><div class="card-placeholder" style="background:#0a0500;"></div><video class="card-media" src="projects/boot.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Boot</div><div class="title-sub">Texturing</div></div></div>
     <div class="project-card ratio-horizontal" data-video="projects/robot.mp4" data-project="robot"><div class="card-placeholder" style="background:#080808;"></div><video class="card-media" src="projects/robot.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Robot</div><div class="title-sub">3D Modelling</div></div></div>
     <div class="project-card ratio-horizontal" data-video="projects/the-beetle.mp4" data-project="the-beetle"><div class="card-placeholder" style="background:#050a05;"></div><video class="card-media" src="projects/the-beetle.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">The Beetle</div><div class="title-sub">Texturing</div></div></div>
-    <div class="project-card ratio-horizontal" data-video="projects/camper.mp4" data-project="camper"><div class="card-placeholder" style="background:#0a0800;"></div><video class="card-media" src="projects/camper.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Camper</div><div class="title-sub">Texturing</div></div></div>
-    <div class="project-card ratio-horizontal" data-video="projects/mouth.mp4" data-project="mouth"><div class="card-placeholder" style="background:#0a0005;"></div><video class="card-media" src="projects/mouth.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Mouth</div><div class="title-sub">Texturing</div></div></div>
-    <div class="project-card ratio-horizontal" data-video="projects/minecart.mp4" data-project="minecart"><div class="card-placeholder" style="background:#050a0a;"></div><video class="card-media" src="projects/minecart.mp4" muted loop playsinline preload="metadata"></video><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Minecart</div><div class="title-sub">3D Modelling</div></div></div>
+    <div class="project-card ratio-horizontal" data-project="camper"><div class="card-placeholder" style="background:#0a0800;"></div><img class="card-media" src="projects/camper.png" alt="camper" loading="lazy"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Camper</div><div class="title-sub">Texturing</div></div></div>
+    <div class="project-card ratio-horizontal" data-project="mouth"><div class="card-placeholder" style="background:#0a0005;"></div><img class="card-media" src="projects/mouth.png" alt="mouth" loading="lazy"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Mouth</div><div class="title-sub">Texturing</div></div></div>
+    <div class="project-card ratio-horizontal" data-project="minecart"><div class="card-placeholder" style="background:#050a0a;"></div><img class="card-media" src="projects/minecart.png" alt="minecart" loading="lazy"><div class="card-overlay"></div><div class="card-title-center"><div class="title-main">Minecart</div><div class="title-sub">3D Modelling</div></div></div>
   </div>
 
   <!-- 03 GRAPHIC DESIGN & MARKETING -->
@@ -910,7 +903,7 @@
 // Place all PNGs inside a folder called "frames" next to index.html
 // ────────────────────────────────────────────────
 const FRAME_COUNT = 29;
-const TEXT_FRAME = 22;   // 0-indexed = frame 23 (text emerges here)
+const TEXT_FRAME = 22;   // 0-indexed = frame 47 (text emerges here)
 const TEXT_FADE_END = 26; // text fully faded by this frame
 
 const frameUrl = i => `frames/${String(i).padStart(4,'0')}.png`;
@@ -937,7 +930,7 @@ function preloadFrames() {
       loadedCount++;
       const pct = Math.round((loadedCount / FRAME_COUNT) * 100);
       loaderBar.style.width = pct + '%';
-      loaderCount.textContent = `${loadedCount} / ${FRAME_COUNT}`;
+      loaderCount.textContent = `${loadedCount} / 29`;
 
       if (loadedCount === FRAME_COUNT) {
         allLoaded = true;
@@ -955,7 +948,7 @@ function preloadFrames() {
     img.onerror = () => {
       loadedCount++;
       loaderBar.style.width = Math.round((loadedCount / FRAME_COUNT) * 100) + '%';
-      loaderCount.textContent = `${loadedCount} / ${FRAME_COUNT}`;
+      loaderCount.textContent = `${loadedCount} / 29`;
       if (loadedCount === FRAME_COUNT) { allLoaded = true; loader.classList.add('hidden'); }
     };
   }
@@ -1036,27 +1029,44 @@ discItems.forEach(el => discObserver.observe(el));
 // ── Detect touch device ──
 const isTouchDevice = () => window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
-// ── Video playback (for any remaining video cards) ──
+// ── Video playback ──
+// Desktop: play on hover with audio
+// Mobile: autoplay muted when card scrolls into view
 document.querySelectorAll('.project-card').forEach(card => {
   const video = card.querySelector('video');
   if (!video) return;
+
   video.load();
+
   if (!isTouchDevice()) {
+    // Desktop hover behaviour
     card.addEventListener('mouseenter', () => {
-      video.muted = false; video.volume = 0.8;
-      video.play().catch(() => { video.muted = true; video.play().catch(() => {}); });
+      video.muted = false;
+      video.volume = 0.8;
+      video.play().catch(() => {
+        video.muted = true;
+        video.play().catch(() => {});
+      });
     });
     card.addEventListener('mouseleave', () => {
-      video.muted = true; video.pause(); video.currentTime = 0;
+      video.muted = true;
+      video.pause();
+      video.currentTime = 0;
     });
   } else {
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { video.muted = true; video.play().catch(() => {}); }
-        else { video.pause(); video.currentTime = 0; }
+    // Mobile: autoplay muted when 40% of card is visible
+    const videoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          video.muted = true;
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+          video.currentTime = 0;
+        }
       });
     }, { threshold: 0.4 });
-    obs.observe(card);
+    videoObserver.observe(card);
   }
 });
 
