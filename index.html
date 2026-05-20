@@ -89,6 +89,7 @@
     object-fit: contain;
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
+    z-index: 15; /* sits above welcome text so text emerges from behind */
   }
 
   /* WELCOME TEXT */
@@ -100,7 +101,7 @@
     opacity: 0;
     text-align: center;
     pointer-events: none;
-    z-index: 20;
+    z-index: 10; /* below brain canvas so text appears from behind */
     white-space: nowrap;
   }
 
@@ -977,7 +978,11 @@ function onScroll() {
   // Hide scroll hint after first scroll
   scrollHint.style.opacity = scrollTop > 20 ? '0' : '1';
 
-  // Draw current frame
+  // Draw current frame — fade canvas out as text emerges
+  const brainFade = frameIndex >= TEXT_FRAME
+    ? Math.max(0, 1 - (frameIndex - TEXT_FRAME + frameFrac) / (FRAME_COUNT - TEXT_FRAME) * 1.4)
+    : 1;
+  canvas.style.opacity = brainFade.toFixed(3);
   drawFrame(frameIndex);
 
   // ── Welcome text logic ──
